@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Hosting;
@@ -8,15 +8,15 @@ using CommandLine;
 
 var parseResult = Parser.Default.ParseArguments<CommandLineOptions>(args);
 Func<ParserResult<CommandLineOptions>, CommandLineOptions> ifParseFailed = (result) =>
+{
+    var notParsed = result as NotParsed<CommandLineOptions>;
+    if (notParsed.Errors.IsHelp() || notParsed.Errors.IsVersion())
     {
-        var notParsed = result as NotParsed<CommandLineOptions>;
-        if (notParsed.Errors.IsHelp() || notParsed.Errors.IsVersion())
-        {
-            return null;
-        }
-        Environment.Exit(1);
         return null;
-    };
+    }
+    Environment.Exit(1);
+    return null;
+};
 
 var parsedOptions = parseResult.Tag switch
 {
@@ -33,9 +33,9 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>
-    {
-        c.SwaggerDoc("v1", new OpenApiInfo { Title = "voicevox_engine_sharp", Version = "v3" });
-    });
+{
+    c.SwaggerDoc("v1", new OpenApiInfo { Title = "voicevox_engine_sharp", Version = "v3" });
+});
 
 var app = builder.Build();
 
