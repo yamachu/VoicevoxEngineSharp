@@ -7,7 +7,7 @@ namespace VoicevoxEngineSharp.Core.Acoustic.Native
     {
         private const string DllName = "each_cpp_forwarder";
 
-        [DllImport(DllName, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
+        [DllImport(DllName, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi, EntryPoint = "?initialize@@YA_NPEAD00_N@Z")]
         public static extern bool initialize(
             string yukarin_s_forwarder_path,
             string yukarin_sa_forwarder_path,
