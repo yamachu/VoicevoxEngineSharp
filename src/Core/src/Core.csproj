@@ -10,4 +10,8 @@
     <PackageReference Include="SharpOpenJTalk" Version="1.2.0" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Include="$(ProjectDir)\..\resources\**" Exclude="$(ProjectDir)\..\resources\.gitkeep" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+
 </Project>
