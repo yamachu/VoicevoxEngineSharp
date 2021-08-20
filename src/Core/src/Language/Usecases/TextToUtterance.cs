@@ -1,4 +1,5 @@
-﻿using VoicevoxEngineSharp.Core.Language.Models;
+﻿using System.Linq;
+using VoicevoxEngineSharp.Core.Language.Models;
 using VoicevoxEngineSharp.Core.Language.Providers;
 
 namespace VoicevoxEngineSharp.Core.Language.Usecases

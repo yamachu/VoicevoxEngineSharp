@@ -1,3 +1,6 @@
+﻿using System.Collections.Generic;
+using System.Linq;
+
 namespace VoicevoxEngineSharp.Core.Acoustic.Models
 {
     internal class JvsPhoneme : BasePhoneme

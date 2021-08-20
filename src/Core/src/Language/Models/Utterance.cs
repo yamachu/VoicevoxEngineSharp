@@ -1,4 +1,6 @@
-﻿using VoicevoxEngineSharp.Core.Language.Extensions;
+﻿using System.Collections.Generic;
+using System.Linq;
+using VoicevoxEngineSharp.Core.Language.Extensions;
 
 namespace VoicevoxEngineSharp.Core.Language.Models
 {

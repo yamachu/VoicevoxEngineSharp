@@ -1,4 +1,6 @@
-﻿namespace VoicevoxEngineSharp.Core.Language.Providers
+﻿using System.Collections.Generic;
+
+namespace VoicevoxEngineSharp.Core.Language.Providers
 {
     public interface IFullContextProvider
     {

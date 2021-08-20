@@ -1,3 +1,5 @@
+﻿using System;
+using System.Collections.Generic;
 using SharpOpenJTalk;
 
 namespace VoicevoxEngineSharp.Core.Language.Providers

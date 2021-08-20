@@ -1,4 +1,7 @@
-﻿namespace VoicevoxEngineSharp.Core.Language.Models
+﻿using System.Collections.Generic;
+using System.Linq;
+
+namespace VoicevoxEngineSharp.Core.Language.Models
 {
 #nullable enable
     public class Mora

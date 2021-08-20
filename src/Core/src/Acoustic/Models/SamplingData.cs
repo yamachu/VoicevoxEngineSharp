@@ -1,4 +1,4 @@
-using NumSharp;
+﻿using NumSharp;
 
 namespace VoicevoxEngineSharp.Core.Acoustic.Models
 {

@@ -1,4 +1,4 @@
-namespace VoicevoxEngineSharp.Core.Acoustic.Models
+﻿namespace VoicevoxEngineSharp.Core.Acoustic.Models
 {
     public record Mora
     {

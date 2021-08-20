@@ -1,3 +1,5 @@
+﻿using System.Collections.Generic;
+
 namespace VoicevoxEngineSharp.Core.Acoustic.Models
 {
     internal interface IBasePhoneme

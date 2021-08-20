@@ -1,4 +1,4 @@
-using VoicevoxEngineSharp.Core.Acoustic.Native;
+﻿using VoicevoxEngineSharp.Core.Acoustic.Native;
 
 namespace VoicevoxEngineSharp.Core.Acoustic.Usecases
 {

@@ -1,4 +1,4 @@
-namespace VoicevoxEngineSharp.Core.Language.Models
+﻿namespace VoicevoxEngineSharp.Core.Language.Models
 {
     public enum LabelContextEnum
     {

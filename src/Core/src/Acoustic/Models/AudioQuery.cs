@@ -1,3 +1,5 @@
+﻿using System.Collections.Generic;
+
 namespace VoicevoxEngineSharp.Core.Acoustic.Models
 {
     public record AudioQuery

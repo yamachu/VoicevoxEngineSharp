@@ -1,4 +1,8 @@
-﻿namespace VoicevoxEngineSharp.Core.Language.Models
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+
+namespace VoicevoxEngineSharp.Core.Language.Models
 {
     public class AccentPhrase
     {
