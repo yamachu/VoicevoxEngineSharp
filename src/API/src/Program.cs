@@ -1,10 +1,14 @@
 ﻿using System;
+using CommandLine;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
-using Microsoft.Extensions.DependencyInjection;
-using CommandLine;
+using VoicevoxEngineSharp.Core.Acoustic.Usecases;
+using VoicevoxEngineSharp.Core.Language.Providers;
+using VoicevoxEngineSharp.Core.Language.Usecases;
 
 var parseResult = Parser.Default.ParseArguments<CommandLineOptions>(args);
 Func<ParserResult<CommandLineOptions>, CommandLineOptions> ifParseFailed = (result) =>
@@ -36,6 +40,8 @@ builder.Services.AddSwaggerGen(c =>
 {
     c.SwaggerDoc("v1", new OpenApiInfo { Title = "voicevox_engine_sharp", Version = "v3" });
 });
+builder.Services.AddSingleton<IFullContextProvider>(new FullContextProvider(@"DICT_PATH", @"HTS_MODEL_PATH"));
+builder.Services.AddSingleton<TextToUtterance>();
 
 var app = builder.Build();
 
@@ -68,6 +74,21 @@ app.MapPost("/synthesis", () =>
 });
 
 app.MapGet("/version", () => "Hello World!");
+
+app.MapGet("/debug/extract_labels", async (context) =>
+{
+    if (!context.Request.Query.TryGetValue("text", out var parseText))
+    {
+        context.Response.StatusCode = 200;
+        return;
+    }
+
+    var contextProvider = context.RequestServices.GetService<IFullContextProvider>();
+    var labels = contextProvider.ToFullContextLabels(parseText.ToString());
+
+    await context.Response.WriteAsJsonAsync(new Dictionary<string, object>() { { "labels", labels } });
+    return;
+});
 
 app.Run($"http://{parsedOptions.Host}:{parsedOptions.Port}");
 
