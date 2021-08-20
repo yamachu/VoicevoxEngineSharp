@@ -5,7 +5,7 @@ namespace VoicevoxEngineSharp.Core.Acoustic.Native
     /// <see>https://github.com/Hiroshiba/yukarin_soso_connector/blob/c8e5b63b5fdb3f8af1d51edaf39e779cfe6a6ba8/build_each_cpp_forwarder/each_cpp_forwarder.h</see>
     internal class EachCppForwarderUnmanaged
     {
-        private const string DllName = "eachcppforwarder";
+        private const string DllName = "each_cpp_forwarder";
 
         [DllImport(DllName, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
         public static extern bool initialize(
