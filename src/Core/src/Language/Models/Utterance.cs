@@ -133,5 +133,6 @@ namespace VoicevoxEngineSharp.Core.Language.Models
 
         public IEnumerable<Phoneme> Phonemes => ToPhonemes();
         public IEnumerable<string> Labels => Phonemes.Select(p => p.Label);
+        public IEnumerable<BreathGroup> BreathGroups => _breathGroups;
     }
 }

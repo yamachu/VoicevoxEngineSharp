@@ -34,6 +34,7 @@ namespace VoicevoxEngineSharp.Core.Language.Models
         }
 
         public Phoneme Vowel => _vowel;
+        public Phoneme? Consonant => _consonant;
     }
 #nullable disable
 }
