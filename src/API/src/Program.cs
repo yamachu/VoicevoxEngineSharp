@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using CommandLine;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
@@ -9,6 +9,7 @@ using Microsoft.OpenApi.Models;
 using VoicevoxEngineSharp.Core.Acoustic.Usecases;
 using VoicevoxEngineSharp.Core.Language.Providers;
 using VoicevoxEngineSharp.Core.Language.Usecases;
+using VoicevoxEngineSharp.Core.Usecases;
 
 var parseResult = Parser.Default.ParseArguments<CommandLineOptions>(args);
 Func<ParserResult<CommandLineOptions>, CommandLineOptions> ifParseFailed = (result) =>
@@ -42,6 +43,8 @@ builder.Services.AddSwaggerGen(c =>
 });
 builder.Services.AddSingleton<IFullContextProvider>(new FullContextProvider(@"DICT_PATH", @"HTS_MODEL_PATH"));
 builder.Services.AddSingleton<TextToUtterance>();
+builder.Services.AddSingleton<SynthesisEngine>(SynthesisEngineBuilder.Initialize("1", "2", "3", false));
+builder.Services.AddSingleton<Synthesis>();
 
 var app = builder.Build();
 
