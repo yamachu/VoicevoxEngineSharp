@@ -1,4 +1,4 @@
-namespace VoicevoxEngineSharp.Core.Acoustic.Native
+﻿namespace VoicevoxEngineSharp.Core.Acoustic.Native
 {
     internal class EachCppForwarder
     {
