@@ -1,6 +1,6 @@
 ﻿using System;
-using Xunit;
 using VoicevoxEngineSharp.Core.Language.Extensions;
+using Xunit;
 
 namespace VoicevoxEngineSharp.Core.Test
 {

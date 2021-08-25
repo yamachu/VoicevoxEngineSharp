@@ -1,6 +1,6 @@
-using System;
-using Xunit;
+﻿using System;
 using VoicevoxEngineSharp.Core.Language.Models;
+using Xunit;
 
 namespace VoicevoxEngineSharp.Core.Test
 {
