@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using VoicevoxEngineSharp.Core.Language.Extensions;
 
 namespace VoicevoxEngineSharp.Core.Acoustic.Models
 {
@@ -75,6 +76,8 @@ namespace VoicevoxEngineSharp.Core.Acoustic.Models
 
             return nextPhonemes;
         }
+
+        public override int PhonemeId => phonemeList.FindIndex((s) => s == phoneme);
     }
 
     internal static class OjtPhonemeExtension
@@ -83,6 +86,28 @@ namespace VoicevoxEngineSharp.Core.Acoustic.Models
         {
             var phonemeDataList = phonemeStrList.Select((p, i) => new OjtPhoneme(phoneme: p, start: i, end: i + 1));
             return OjtPhoneme.Convert(phonemeDataList);
+        }
+
+
+        public static (IEnumerable<OjtPhoneme?> consonantPhonemeList, OjtPhoneme[] vowelPhonemeList, int[] vowelIndexes) SplitMora(this IEnumerable<OjtPhoneme> phonemeList)
+        {
+            var vowelIndexes = phonemeList.Select((v, i) => (v, i))
+                .Where(v => PhonemeList.MoraPhonemes.Any(p => p == v.v.phoneme))
+                .Select(v => v.i)
+                .ToArray();
+
+            var vowelPhonemeList = vowelIndexes.Select(i => phonemeList.ElementAt(i)).ToArray();
+            var consonantPhonemeList = Enumerable.Concat(
+                new OjtPhoneme?[] { null },
+                Enumerable.Zip(vowelIndexes[..^1], vowelIndexes[1..])
+                    .Select((pair) =>
+                    {
+                        Console.WriteLine(pair);
+                        return pair.Second - pair.First == 1 ? null : phonemeList.ElementAtOrDefault(pair.Second - 1);
+                    })
+                );
+
+            return (consonantPhonemeList, vowelPhonemeList, vowelIndexes);
         }
     }
 }
