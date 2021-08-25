@@ -10,7 +10,7 @@
 #nullable disable
         public string Vowel { get; init; }
 
-        public float Pitch { get; init; } = 0;
+        public float Pitch { get; set; } = 0;
     }
 
 }
