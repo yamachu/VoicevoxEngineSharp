@@ -1,4 +1,5 @@
 using System;
+using System.Net;
 using CommandLine;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
@@ -6,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
+using NAudio.Wave;
 using VoicevoxEngineSharp.Core.Acoustic.Usecases;
 using VoicevoxEngineSharp.Core.Language.Providers;
 using VoicevoxEngineSharp.Core.Language.Usecases;
@@ -45,6 +47,18 @@ builder.Services.AddSingleton<IFullContextProvider>(new FullContextProvider(@"DI
 builder.Services.AddSingleton<TextToUtterance>();
 builder.Services.AddSingleton<SynthesisEngine>(SynthesisEngineBuilder.Initialize("1", "2", "3", false));
 builder.Services.AddSingleton<Synthesis>();
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy(name: "MyPolicy",
+        builder =>
+        {
+            // NOTE: VoicevoxのClient側のリクエストを変えないとCORS周りもうちょいいじらないとかも
+            builder
+                .WithOrigins("http://localhost:8080")
+                .WithMethods("*")
+                .WithHeaders("*");
+        });
+});
 
 var app = builder.Build();
 
@@ -53,43 +67,103 @@ if (app.Environment.IsDevelopment())
     app.UseDeveloperExceptionPage();
 }
 
+app.UseCors("MyPolicy");
 app.UseSwagger();
 app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "voicevox_engine_sharp v1"));
 
-app.MapPost("/audio_query", () =>
+app.MapPost("/audio_query", async (context) =>
 {
-    return new StatusCodeResult(500);
-});
+    var synthesisService = context.RequestServices.GetService<Synthesis>();
+    var speaker = int.Parse(context.Request.Query.Single(v => v.Key == "speaker").Value.ToString());
+    var text = context.Request.Query.Single(v => v.Key == "text").Value.ToString();
+    var accentPhrases = synthesisService.CreateAccentPhrases(text, speaker);
 
-app.MapPost("/accent_phrases", () =>
-{
-    return new StatusCodeResult(500);
-});
-
-app.MapPost("/mora_pitch", () =>
-{
-    return new StatusCodeResult(500);
-});
-
-app.MapPost("/synthesis", () =>
-{
-    return new StatusCodeResult(500);
-});
-
-app.MapGet("/version", () => "Hello World!");
-
-app.MapGet("/debug/extract_labels", async (context) =>
-{
-    if (!context.Request.Query.TryGetValue("text", out var parseText))
+    await context.Response.WriteAsJsonAsync(new AudioQuery
     {
-        context.Response.StatusCode = 200;
+        AccentPhrases = accentPhrases.Select(v => AccentPhrase.FromDomain(v)),
+        SpeedScale = 1,
+        PitchScale = 0,
+        IntonationScale = 1,
+        VolumeScale = 1,
+        PrePhonemeLength = 0.1f,
+        PostPhonemeLength = 0.1f,
+        OutputSamlingRate = 24000,
+        OutputStereo = false,
+    });
+    return;
+});
+
+app.MapPost("/accent_phrases", async (context) =>
+{
+    var synthesisService = context.RequestServices.GetService<Synthesis>();
+    var speaker = int.Parse(context.Request.Query.Single(v => v.Key == "speaker").Value.ToString());
+    var text = context.Request.Query.Single(v => v.Key == "text").Value.ToString();
+    var accentPhrases = synthesisService.CreateAccentPhrases(text, speaker);
+
+    await context.Response.WriteAsJsonAsync(accentPhrases.Select(v => AccentPhrase.FromDomain(v)));
+    return;
+});
+
+app.MapPost("/mora_pitch", async (context) =>
+{
+    if (!context.Request.HasJsonContentType())
+    {
+        context.Response.StatusCode = (int)HttpStatusCode.UnsupportedMediaType;
+        return;
+    }
+    var synthesisService = context.RequestServices.GetService<Synthesis>();
+    var request = await context.Request.ReadFromJsonAsync<IEnumerable<AccentPhrase>>();
+    var speaker = int.Parse(context.Request.Query.Single(v => v.Key == "speaker").Value.ToString());
+    var accentPhrases = synthesisService.ReplaceMoraPitch(request.Select(v => AccentPhrase.ToDomain(v)), speaker);
+
+    await context.Response.WriteAsJsonAsync(accentPhrases.Select(v => AccentPhrase.FromDomain(v)));
+    return;
+});
+
+app.MapPost("/synthesis", async (context) =>
+{
+    if (!context.Request.HasJsonContentType())
+    {
+        context.Response.StatusCode = (int)HttpStatusCode.UnsupportedMediaType;
         return;
     }
 
-    var contextProvider = context.RequestServices.GetService<IFullContextProvider>();
-    var labels = contextProvider.ToFullContextLabels(parseText.ToString());
+    var synthesisService = context.RequestServices.GetService<Synthesis>();
+    var request = await context.Request.ReadFromJsonAsync<AudioQuery>();
+    var speaker = int.Parse(context.Request.Query.Single(v => v.Key == "speaker").Value.ToString());
+    var wave = synthesisService.SynthesisWave(new VoicevoxEngineSharp.Core.Acoustic.Models.AudioQuery
+    {
+        AccentPhrases = request.AccentPhrases.Select(v => AccentPhrase.ToDomain(v)),
+        SpeedScale = request.SpeedScale,
+        PitchScale = request.PitchScale,
+        IntonationScale = request.IntonationScale,
+        VolumeScale = request.VolumeScale,
+        PrePhonemeLength = request.PrePhonemeLength,
+        PostPhonemeLength = request.PostPhonemeLength,
+        OutputSamlingRate = request.OutputSamlingRate,
+        OutputStereo = request.OutputStereo,
+    }, speaker).ToArray();
+    using var stream = new MemoryStream();
+    using var writerStream = new WaveFileWriter(stream, WaveFormat.CreateIeeeFloatWaveFormat(24000, 1));
+    writerStream.WriteSamples(wave, 0, wave.Length);
+    stream.Position = 0;
 
-    await context.Response.WriteAsJsonAsync(new Dictionary<string, object>() { { "labels", labels } });
+    context.Response.ContentType = "audio/wav";
+    await stream.CopyToAsync(context.Response.Body);
+    await context.Response.Body.FlushAsync();
+
+    return;
+});
+
+app.MapGet("/version", async () =>
+{
+    return await System.IO.File.ReadAllTextAsync("VERSION.txt", encoding: System.Text.Encoding.UTF8);
+});
+
+app.MapGet("/speakers", async (context) =>
+{
+    var speakers = System.IO.File.ReadAllTextAsync("speakers.json", encoding: System.Text.Encoding.UTF8);
+    await context.Response.WriteAsJsonAsync(speakers);
     return;
 });
 
