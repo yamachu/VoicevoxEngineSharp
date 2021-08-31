@@ -122,7 +122,101 @@ namespace VoicevoxEngineSharp.Core.Acoustic.Usecases
                 mora.Pitch = f0List[i + 1];
             }
 
-            return accentPhrases;
+            var ind = 0;
+            var gen = accentPhrases.Select(v =>
+            {
+                var ac = new AccentPhrase
+                {
+                    Accent = v.Accent,
+                    PauseMora = v.PauseMora,
+                    Moras = flattenMoras.Skip(ind).Take(v.Moras.Count()).ToArray()
+                };
+                ind += v.Moras.Count();
+                return ac;
+            }).ToArray();
+
+            return gen;
+        }
+
+        internal IEnumerable<float> Synthesis(AudioQuery audioQuery, int speakerId)
+        {
+            const int rate = 200;
+
+            var flattenMoras = audioQuery.AccentPhrases.ToFlattenMoras();
+            var phonemeStrList = Enumerable.Concat(
+               new[] { "pau" },
+               flattenMoras.SelectMany(mora => mora.Consonant == null ? new[] { mora.Vowel } : new[] { mora.Consonant, mora.Vowel }))
+               .Concat(new[] { "pau" });
+
+            var phonemeDataList = phonemeStrList.ToOjtPhonemeDataList();
+            var phonemeListS = phonemeDataList.Select(v => (long)v.PhonemeId);
+
+            var phonemeLength = EachCppForwarder.YukarinSForward(phonemeDataList.Count(), phonemeListS.ToArray(), new long[] { speakerId });
+            phonemeLength[0] = audioQuery.PrePhonemeLength;
+            phonemeLength[^1] = audioQuery.PostPhonemeLength;
+
+            var ndPhonemeLength = (np.round_(new NDArray<float>(phonemeLength, new Shape(phonemeLength.Length)) * rate, typeof(float)) / rate) / audioQuery.SpeedScale;
+
+            // pitch
+            var f0List = Enumerable.Concat(new float[] { 0 }, flattenMoras.Select(v => v.Pitch)).Concat(new float[] { 0 });
+            var f0 = np.array(f0List.ToArray(), typeof(float)) * Math.Pow(2.0, audioQuery.PitchScale);
+
+            var voiced = f0 > 0f;
+            var meanF0 = f0[voiced].mean();
+            if (!float.IsNaN(meanF0.GetSingle()))
+            {
+                foreach (var (_, i) in voiced.ToArray<bool>().Select((v, i) => (v, i)).Where((v) => v.v))
+                {
+                    f0[i] = (f0[i] - meanF0.GetSingle()) * audioQuery.IntonationScale + meanF0.GetSingle();
+                }
+            }
+
+            var (_, _, vowelIndexesData) = phonemeDataList.SplitMora();
+            var vowelIndexes = np.array(vowelIndexesData);
+
+            // forward decode
+            var phonemeBinNum = np.round_(np.array(phonemeLength) * np.array(new[] { rate })).astype(NPTypeCode.Int32);
+
+            //var phoneme = np.repeat(np.array(phonemeListS), phonemeBinNum);
+            var phoneme = np.array(phonemeBinNum.ToArray<int>().SelectMany((v, i) => np.repeat(phonemeListS.ElementAt(i), v).ToArray<long>()));
+
+            var tmp = (vowelIndexes[":-1"] + 1).ToArray<int>();
+
+            //var repeatedF0 = np.repeat(f0, np.array(tmp.Zip(tmp.Skip(1), (p, n) => $"{p}:{n}").Select(v => phonemeBinNum[v].sum()).ToArray()));
+            var repeatedF0 = np.array(tmp.Zip(tmp.Skip(1), (p, n) => $"{p}:{n}").Select(v => phonemeBinNum[v].sum()).ToArray()
+                .SelectMany((v, i) => np.repeat(f0[i], (int)v.GetInt64()).ToArray<float>()));
+
+            var arr = np.zeros(new Shape(new int[] { phoneme.size, OjtPhoneme.numPhoneme }), typeof(float));
+            foreach (var (outer, inner) in phoneme.ToArray<long>().Select((inner, outer) => (outer, inner)))
+            {
+                arr[outer, (int)inner] = 1;
+            }
+            //arr[np.arange(phoneme.size), phoneme] = 1;
+
+            var sampleF0 = new SamplingData(repeatedF0, rate).Resample(24000 / 256);
+            var samplePhoneme = new SamplingData(arr, rate).Resample(24000 / 256);
+
+            var dLength = samplePhoneme.shape[0];
+            var dPhonemeSize = samplePhoneme.shape[1];
+            var dF0 = sampleF0[":", np.newaxis];
+            var dF0Float = dF0.ToArray<float>();
+            var dPhoneme = samplePhoneme.ToArray<float>();
+            var dSpeakerId = new long[] { speakerId };
+
+            var wave = EachCppForwarder.DecodeForward(
+                dLength,
+                dPhonemeSize,
+                dF0Float,
+                dPhoneme,
+                dSpeakerId
+            );
+
+            if (audioQuery.VolumeScale != 1f)
+            {
+                return wave.Select(v => v * audioQuery.VolumeScale);
+            }
+
+            return wave;
         }
 
         // [N] な配列

@@ -44,5 +44,10 @@ namespace VoicevoxEngineSharp.Core.Usecases
 
             return ReplaceMoraPitch(accentPhrases, speakerId);
         }
+
+        public IEnumerable<float> SynthesisWave(AudioQuery audioQuery, int speakerId)
+        {
+            return _synthesisEngine.Synthesis(audioQuery, speakerId);
+        }
     }
 }
