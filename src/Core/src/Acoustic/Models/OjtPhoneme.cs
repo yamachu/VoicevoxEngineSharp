@@ -102,7 +102,6 @@ namespace VoicevoxEngineSharp.Core.Acoustic.Models
                 Enumerable.Zip(vowelIndexes[..^1], vowelIndexes[1..])
                     .Select((pair) =>
                     {
-                        Console.WriteLine(pair);
                         return pair.Second - pair.First == 1 ? null : phonemeList.ElementAtOrDefault(pair.Second - 1);
                     })
                 );
