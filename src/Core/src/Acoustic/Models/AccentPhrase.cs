@@ -20,8 +20,8 @@ namespace VoicevoxEngineSharp.Core.Acoustic.Models
         {
             return accentPhrases
                 .SelectMany(accentPhrase => accentPhrase.PauseMora == null
-                ? accentPhrase.Moras
-                : Enumerable.Concat(accentPhrase.Moras, new[] { accentPhrase.PauseMora }));
+                ? accentPhrase.Moras.ToArray()
+                : Enumerable.Concat(accentPhrase.Moras, new[] { accentPhrase.PauseMora })).ToArray();
         }
     }
 
