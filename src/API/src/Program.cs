@@ -52,11 +52,7 @@ builder.Services.AddCors(options =>
     options.AddPolicy(name: "MyPolicy",
         builder =>
         {
-            // NOTE: VoicevoxのClient側のリクエストを変えないとCORS周りもうちょいいじらないとかも
-            builder
-                .WithOrigins("http://localhost:8080")
-                .WithMethods("*")
-                .WithHeaders("*");
+            builder.AllowAnyHeader().AllowAnyMethod().AllowAnyOrigin();
         });
 });
 
