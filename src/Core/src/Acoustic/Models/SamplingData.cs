@@ -22,6 +22,11 @@ namespace VoicevoxEngineSharp.Core.Acoustic.Models
             }
 
             var indexes = (np.random.rand() + index + np.arange(_length.Value)) * (rate / resampleRate);
+            // NOTE: Index外になることが稀にあるので、いい感じにしておく
+            while (indexes.max().GetDouble() > array.shape[0])
+            {
+                indexes = indexes * 0.999;
+            }
             return array[indexes.astype(NPTypeCode.Int32)];
         }
     }
