@@ -18,10 +18,10 @@ namespace VoicevoxEngineSharp.Core.Acoustic.Models
             var _length = length;
             if (!length.HasValue)
             {
-                _length = (int)(array.size / rate * resampleRate);
+                _length = (int)(array.shape[0] / rate * resampleRate);
             }
 
-            var indexes = np.random.rand() + index + np.arange(_length.Value) * (rate / resampleRate);
+            var indexes = (np.random.rand() + index + np.arange(_length.Value)) * (rate / resampleRate);
             return array[indexes.astype(NPTypeCode.Int32)];
         }
     }
