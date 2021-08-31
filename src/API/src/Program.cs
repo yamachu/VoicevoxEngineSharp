@@ -45,6 +45,10 @@ builder.Services.AddSwaggerGen(c =>
 });
 builder.Services.AddSingleton<IFullContextProvider>(new FullContextProvider(@"DICT_PATH", @"HTS_MODEL_PATH"));
 builder.Services.AddSingleton<TextToUtterance>();
+if (parsedOptions.VoicevoxDir != null)
+{
+    Directory.SetCurrentDirectory(parsedOptions.VoicevoxDir);
+}
 builder.Services.AddSingleton<SynthesisEngine>(SynthesisEngineBuilder.Initialize("1", "2", "3", false));
 builder.Services.AddSingleton<Synthesis>();
 builder.Services.AddCors(options =>
@@ -178,4 +182,14 @@ internal class CommandLineOptions
 
     [Option(longName: "use_gpu", Required = false, Default = false)]
     public bool UseGpu { get; set; }
+
+    [Option(longName: "voicevox_dir", Required = false, Default = null)]
+    public string? VoicevoxDir { get; set; }
+
+    // @unused
+    // NOTE: each_cpp_forwarderがevalされたDirと同じディレクトリ内のvoicelibを探索するため、
+    // DllImport でNativeメソッドを呼び出し出来るようにしている今の作りと組み合わせが良くない
+    // 今後作りを変える
+    [Option(longName: "voiceliv_dir", Required = false, Default = null)]
+    public string? VoicelibDir { get; set; }
 }
