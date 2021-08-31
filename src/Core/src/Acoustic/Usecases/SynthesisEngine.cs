@@ -131,7 +131,7 @@ namespace VoicevoxEngineSharp.Core.Acoustic.Usecases
                     PauseMora = v.PauseMora,
                     Moras = flattenMoras.Skip(ind).Take(v.Moras.Count()).ToArray()
                 };
-                ind += v.Moras.Count();
+                ind += v.Moras.Count() + (v.PauseMora == null ? 0 : 1);
                 return ac;
             }).ToArray();
 
