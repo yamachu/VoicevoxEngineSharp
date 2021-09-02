@@ -16,6 +16,11 @@ namespace VoicevoxEngineSharp.Core.Language.Models
 
             foreach (var (phoneme, nextPhoneme) in Enumerable.Zip(phonemes, Enumerable.Concat(phonemes.Skip(1), new Phoneme?[] { null })))
             {
+                // see: https://github.com/Hiroshiba/voicevox_engine/pull/58
+                if (phoneme.Context("a2") == "49")
+                {
+                    break;
+                }
                 moraPhonemes.Add(phoneme);
                 if (nextPhoneme == null || phoneme.Context("a2") != nextPhoneme.Context("a2"))
                 {
@@ -31,7 +36,9 @@ namespace VoicevoxEngineSharp.Core.Language.Models
                 }
             }
 
-            return new AccentPhrase(moras, Convert.ToInt32(moras[0].Vowel.Context("f2")));
+            // see: https://github.com/Hiroshiba/voicevox_engine/pull/58
+            var accent = Convert.ToInt32(moras[0].Vowel.Context("f2"));
+            return new AccentPhrase(moras, accent <= moras.Count ? accent : moras.Count);
         }
 
         private AccentPhrase(IEnumerable<Mora> moras, int accent)
