@@ -41,7 +41,7 @@ namespace VoicevoxEngineSharp.Core.Acoustic.Usecases
             DecodeForward = decodeForwardImpl;
         }
 
-        internal IEnumerable<AccentPhrase> ExtractPhonemeF0(IEnumerable<AccentPhrase> accentPhrases, int speakerId)
+        internal IEnumerable<AccentPhrase> ReplaceMoraData(IEnumerable<AccentPhrase> accentPhrases, int speakerId)
         {
             // NOTE: こいつに対して破壊的操作をするっぽい
             var flattenMoras = accentPhrases.ToFlattenMoras();

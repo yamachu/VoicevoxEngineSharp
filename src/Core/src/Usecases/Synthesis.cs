@@ -18,7 +18,7 @@ namespace VoicevoxEngineSharp.Core.Usecases
 
         public IEnumerable<AccentPhrase> ReplaceMoraPitch(IEnumerable<AccentPhrase> accentPhrases, int speakerId)
         {
-            return _synthesisEngine.ExtractPhonemeF0(accentPhrases, speakerId);
+            return _synthesisEngine.ReplaceMoraData(accentPhrases, speakerId);
         }
 
         public IEnumerable<AccentPhrase> CreateAccentPhrases(string text, int speakerId)
