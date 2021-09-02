@@ -1,18 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
-using SharpOpenJTalk;
+using SharpOpenJTalk.Lang;
 
 namespace VoicevoxEngineSharp.Core.Language.Providers
 {
     public class FullContextProvider : IFullContextProvider
     {
         private OpenJTalkAPI instance { get; init; }
-        public FullContextProvider(string dictPath, string modelPath)
+        public FullContextProvider(string dictPath)
         {
             var instance = new OpenJTalkAPI();
-            if (!instance.Initialize(dictPath, modelPath))
+            if (!instance.Initialize(dictPath))
             {
-                throw new ArgumentException("OpenJTalk initialize failed, dictPath or modelPath is incorrect");
+                throw new ArgumentException("OpenJTalk initialize failed, dictPath is incorrect");
             }
 
             this.instance = instance;
