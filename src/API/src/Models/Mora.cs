@@ -9,23 +9,39 @@ internal record Mora
     [JsonPropertyName("consonant")]
     public string? Consonant { get; init; }
 
+    [JsonPropertyName("consonant_length")]
+    public float? ConsonantLength { get; init; }
+
 #nullable disable
     [JsonPropertyName("vowel")]
     public string Vowel { get; init; }
+
+    [JsonPropertyName("vowel_length")]
+    public float VowelLength { get; init; }
 
     [JsonPropertyName("pitch")]
 
     public float Pitch { get; init; } = 0;
 
     public static Mora FronDomain(VoicevoxEngineSharp.Core.Acoustic.Models.Mora domainMora)
-        => new Mora { Consonant = domainMora.Consonant, Text = domainMora.Text, Pitch = domainMora.Pitch, Vowel = domainMora.Vowel };
+        => new Mora
+        {
+            Text = domainMora.Text,
+            Consonant = domainMora.Consonant,
+            ConsonantLength = domainMora.ConsonantLength,
+            Vowel = domainMora.Vowel,
+            VowelLength = domainMora.VowelLength,
+            Pitch = domainMora.Pitch
+        };
 
     public static VoicevoxEngineSharp.Core.Acoustic.Models.Mora ToDomain(Mora mora)
         => new VoicevoxEngineSharp.Core.Acoustic.Models.Mora
         {
-            Consonant = mora.Consonant,
-            Pitch = mora.Pitch,
             Text = mora.Text,
-            Vowel = mora.Vowel
+            Consonant = mora.Consonant,
+            ConsonantLength = mora.ConsonantLength,
+            Vowel = mora.Vowel,
+            VowelLength = mora.VowelLength,
+            Pitch = mora.Pitch
         };
 }
