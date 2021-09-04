@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using VoicevoxEngineSharp.Core.Language.Extensions;
 
 namespace VoicevoxEngineSharp.Core.Language.Models
 {
@@ -11,34 +12,40 @@ namespace VoicevoxEngineSharp.Core.Language.Models
 
         public static AccentPhrase FromPhonemes(IEnumerable<Phoneme> phonemes)
         {
-            var moras = new List<Mora>();
-            var moraPhonemes = new List<Phoneme>();
-
-            foreach (var (phoneme, nextPhoneme) in Enumerable.Zip(phonemes, Enumerable.Concat(phonemes.Skip(1), new Phoneme?[] { null })))
-            {
-                // see: https://github.com/Hiroshiba/voicevox_engine/pull/58
-                if (phoneme.Context("a2") == "49")
+            var groupedMoras = phonemes.GroupBy(s => s.Context("a2"))
+                .Select(v => (v.Key, v.ToArray()))
+                .SelectMany((v) =>
                 {
-                    break;
-                }
-                moraPhonemes.Add(phoneme);
-                if (nextPhoneme == null || phoneme.Context("a2") != nextPhoneme.Context("a2"))
-                {
-                    var (consonant, vowel) = moraPhonemes.Count switch
+                    if (v.Key == "49")
                     {
-                        1 => (null, moraPhonemes[0]),
-                        2 => (moraPhonemes[0], moraPhonemes[1]),
-                        _ => throw new ArgumentException("TODO"),
-                    };
+                        return v.Item2.Aggregate((new Mora[] { }, new Phoneme[] { }), (prev, curr) =>
+                        {
+                            return (curr.IsVowel(), prev.Item2.Length) switch
+                            {
+                                (true, 0) => (prev.Item1.Concat(new[] { new Mora(vowel: curr, consonant: null) }).ToArray(), new Phoneme[] { }),
+                                (true, 1) => (prev.Item1.Concat(new[] { new Mora(vowel: curr, consonant: prev.Item2[0]) }).ToArray(), new Phoneme[] { }),
+                                _ => (prev.Item1, prev.Item2.Concat(new[] { curr }).ToArray())
+                            };
+                        }).Item1;
+                    }
+                    else
+                    {
+                        var (consonant, vowel) = v.Item2.Length switch
+                        {
+                            1 => (null, v.Item2[0]),
+                            2 => (v.Item2[0], v.Item2[1]),
+                            _ => throw new ArgumentException()
+                        };
+                        return new[] { new Mora(vowel: vowel, consonant: consonant) };
+                    }
+                });
 
-                    moras.Add(new Mora(vowel: vowel, consonant: consonant));
-                    moraPhonemes.Clear();
-                }
-            }
+            var moras = groupedMoras.ToArray();
+            // NOTE: 1~49のレンジで収まる数になっていないとなので、Maxの数は48で固定している
+            // see: https://github.com/Hiroshiba/voicevox_engine/issues/57
+            var limitedMoras = moras.Take(48).ToArray();
 
-            // see: https://github.com/Hiroshiba/voicevox_engine/pull/58
-            var accent = Convert.ToInt32(moras[0].Vowel.Context("f2"));
-            return new AccentPhrase(moras, accent <= moras.Count ? accent : moras.Count);
+            return new AccentPhrase(limitedMoras, limitedMoras.Length);
         }
 
         private AccentPhrase(IEnumerable<Mora> moras, int accent)
