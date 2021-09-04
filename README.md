@@ -37,3 +37,10 @@ dotnet build src/API/src/API.csproj ; cd src/API/src/bin/Debug/net6.0 ; dotnet A
 ```
 
 その他の引数は VOICEVOX ENGINE に準拠しています
+
+## 注意事項
+
+### 稀に生成される音声がノイズだらけになって聞き取れない
+
+Engine の再起動をお試しください。
+また Engine のディレクトリに each_cpp_forwarder.{dll, so} と core.{dll, so} が共存していると正常に動作しない事象が確認されています。
