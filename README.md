@@ -44,3 +44,12 @@ dotnet build src/API/src/API.csproj ; cd src/API/src/bin/Debug/net6.0 ; dotnet A
 
 Engine の再起動をお試しください。
 また Engine のディレクトリに each_cpp_forwarder.{dll, so} と core.{dll, so} が共存していると正常に動作しない事象が確認されています。
+
+### 実装されていない機能がある
+
+- [ ] モノラルステレオ選択
+- [ ] サンプリングレートの変更
+
+などの機能が未実装
+
+Welcome contribute!
