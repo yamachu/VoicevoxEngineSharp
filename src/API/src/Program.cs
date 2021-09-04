@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Net;
 using CommandLine;
 using Microsoft.AspNetCore.Builder;
@@ -36,6 +36,10 @@ if (parsedOptions == null)
     return;
 }
 
+const string OpenJTalkDictPath = @"open_jtalk_dic_utf_8-1.11";
+var dictPath = parsedOptions.VoicevoxDir == null
+    ? Path.Join(Directory.GetCurrentDirectory(), OpenJTalkDictPath)
+    : Path.Join(parsedOptions.VoicevoxDir, "pyopenjtalk", OpenJTalkDictPath);
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddEndpointsApiExplorer();
@@ -43,13 +47,13 @@ builder.Services.AddSwaggerGen(c =>
 {
     c.SwaggerDoc("v1", new OpenApiInfo { Title = "voicevox_engine_sharp", Version = "v3" });
 });
-builder.Services.AddSingleton<IFullContextProvider>(new FullContextProvider(@"DICT_PATH", @"HTS_MODEL_PATH"));
+builder.Services.AddSingleton<IFullContextProvider>(new FullContextProvider(dictPath));
 builder.Services.AddSingleton<TextToUtterance>();
 if (parsedOptions.VoicevoxDir != null)
 {
     Directory.SetCurrentDirectory(parsedOptions.VoicevoxDir);
 }
-builder.Services.AddSingleton<SynthesisEngine>(SynthesisEngineBuilder.Initialize("1", "2", "3", false));
+builder.Services.AddSingleton<SynthesisEngine>(SynthesisEngineBuilder.Initialize("1", "2", "3", parsedOptions.UseGpu, parsedOptions.UseCore));
 builder.Services.AddSingleton<Synthesis>();
 builder.Services.AddCors(options =>
 {
@@ -192,4 +196,7 @@ internal class CommandLineOptions
     // 今後作りを変える
     [Option(longName: "voiceliv_dir", Required = false, Default = null)]
     public string? VoicelibDir { get; set; }
+
+    [Option(longName: "use_core", Required = false, Default = false)]
+    public bool UseCore { get; set; }
 }
