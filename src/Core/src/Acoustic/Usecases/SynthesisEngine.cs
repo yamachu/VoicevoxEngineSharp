@@ -1,7 +1,6 @@
 ﻿using NumSharp;
 using NumSharp.Generic;
 using VoicevoxEngineSharp.Core.Acoustic.Models;
-using VoicevoxEngineSharp.Core.Acoustic.Native;
 
 namespace VoicevoxEngineSharp.Core.Acoustic.Usecases
 {
@@ -10,19 +9,37 @@ namespace VoicevoxEngineSharp.Core.Acoustic.Usecases
         public static SynthesisEngine Initialize(string yukarin_s_forwarder_path,
             string yukarin_sa_forwarder_path,
             string decode_forwarder_path,
-            bool use_gpu)
+            bool use_gpu,
+            bool useCore = false)
         {
-            if (!EachCppForwarder.Initialize(yukarin_s_forwarder_path, yukarin_sa_forwarder_path, decode_forwarder_path, use_gpu))
+            Func<string, string, string, bool, bool> initialize = useCore ? Native.Core.Initialize : Native.EachCppForwarder.Initialize;
+            if (!initialize(yukarin_s_forwarder_path, yukarin_sa_forwarder_path, decode_forwarder_path, use_gpu))
             {
-                throw new ArgumentException("Failed to initialize EachCppForwarder, verify passed arguments");
+                throw new ArgumentException("Failed to initialize library, verify passed arguments");
             }
-            return new SynthesisEngine();
+            return new SynthesisEngine(
+                useCore ? Native.Core.YukarinSForward : Native.EachCppForwarder.YukarinSForward,
+                useCore ? Native.Core.YukarinSaForward : Native.EachCppForwarder.YukarinSaForward,
+                useCore ? Native.Core.DecodeForward : Native.EachCppForwarder.DecodeForward
+            );
         }
     }
 
     public class SynthesisEngine
     {
-        internal SynthesisEngine() { }
+        Func<int, long[], long[], float[]> YukarinSForward;
+        Func<int, long[], long[], long[], long[], long[], long[], long[], float[]> YukarinSaForward;
+        Func<int, int, float[], float[], long[], float[]> DecodeForward;
+        internal SynthesisEngine(
+            Func<int, long[], long[], float[]> yukarinSForwardImpl,
+            Func<int, long[], long[], long[], long[], long[], long[], long[], float[]> yukarinSaForwardImpl,
+            Func<int, int, float[], float[], long[], float[]> decodeForwardImpl
+        )
+        {
+            YukarinSForward = yukarinSForwardImpl;
+            YukarinSaForward = yukarinSaForwardImpl;
+            DecodeForward = decodeForwardImpl;
+        }
 
         internal IEnumerable<AccentPhrase> ExtractPhonemeF0(IEnumerable<AccentPhrase> accentPhrases, int speakerId)
         {
@@ -98,7 +115,7 @@ namespace VoicevoxEngineSharp.Core.Acoustic.Usecases
             var vowelPhonemeList = np.array(vowelPhonemeDataList.Select(p => p.PhonemeId).ToArray(), dtype: typeof(long));
             var consonantPhonemeList = np.array(consonantPhonemeDataList.Select(p => p == null ? -1 : p.PhonemeId).ToArray(), dtype: typeof(long));
 
-            var f0List = EachCppForwarder.YukarinSaForward(
+            var f0List = YukarinSaForward(
                 vowelPhonemeList.shape[0],
                 vowelPhonemeList[np.newaxis].ToArray<long>(),
                 consonantPhonemeList[np.newaxis].ToArray<long>(),
@@ -151,7 +168,7 @@ namespace VoicevoxEngineSharp.Core.Acoustic.Usecases
             var phonemeDataList = phonemeStrList.ToOjtPhonemeDataList();
             var phonemeListS = phonemeDataList.Select(v => (long)v.PhonemeId);
 
-            var phonemeLength = EachCppForwarder.YukarinSForward(phonemeDataList.Count(), phonemeListS.ToArray(), new long[] { speakerId });
+            var phonemeLength = YukarinSForward(phonemeDataList.Count(), phonemeListS.ToArray(), new long[] { speakerId });
             phonemeLength[0] = audioQuery.PrePhonemeLength;
             phonemeLength[^1] = audioQuery.PostPhonemeLength;
 
@@ -203,7 +220,7 @@ namespace VoicevoxEngineSharp.Core.Acoustic.Usecases
             var dPhoneme = samplePhoneme.ToArray<float>();
             var dSpeakerId = new long[] { speakerId };
 
-            var wave = EachCppForwarder.DecodeForward(
+            var wave = DecodeForward(
                 dLength,
                 dPhonemeSize,
                 dF0Float,
