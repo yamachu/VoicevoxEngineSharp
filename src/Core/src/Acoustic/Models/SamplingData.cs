@@ -27,7 +27,7 @@ namespace VoicevoxEngineSharp.Core.Acoustic.Models
             {
                 indexes = indexes * 0.999;
             }
-            return array[indexes.astype(NPTypeCode.Int32)];
+            return array[np.floor(indexes, NPTypeCode.Double).astype(NPTypeCode.Int32)];
         }
     }
 }
