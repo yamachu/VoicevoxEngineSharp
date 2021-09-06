@@ -103,13 +103,12 @@ app.MapPost("/accent_phrases", async (int speaker, string text, Synthesis synthe
     return accentPhrases.Select(v => AccentPhrase.FromDomain(v));
 });
 
-app.MapPost("/mora_pitch", async (int speaker, Synthesis synthesisService) =>
+app.MapPost("/mora_pitch", async (int speaker, Synthesis synthesisService, HttpContext context) =>
 {
     // This will be supported by default in .NET 6 https://github.com/dotnet/aspnetcore/pull/36118
     if (!context.Request.HasJsonContentType())
     {
-        context.Response.StatusCode = (int)HttpStatusCode.UnsupportedMediaType;
-        return;
+        throw new BadHttpRequestException("unsupporterd media type", StatusCodes.Status415UnsupportedMediaType);
     }
 
     var request = await context.Request.ReadFromJsonAsync<IEnumerable<AccentPhrase>>();
@@ -118,14 +117,13 @@ app.MapPost("/mora_pitch", async (int speaker, Synthesis synthesisService) =>
     return accentPhrases.Select(v => AccentPhrase.FromDomain(v));
 });
 
-app.MapPost("/synthesis", async (int speaker, Synthesis synthesisService, AudioQuery request) =>
+app.MapPost("/synthesis", async (int speaker, Synthesis synthesisService, AudioQuery request, HttpContext context) =>
 {
-    // This will be supported by default in .NET 6 https://github.com/dotnet/aspnetcore/pull/36118
-    if (!context.Request.HasJsonContentType())
-    {
-        context.Response.StatusCode = (int)HttpStatusCode.UnsupportedMediaType;
-        return;
-    }
+   // This will be supported by default in .NET 6 https://github.com/dotnet/aspnetcore/pull/36118
+   if (!context.Request.HasJsonContentType())
+   {
+       throw new BadHttpRequestException("unsupporterd media type", StatusCodes.Status415UnsupportedMediaType);
+   }
 
     var wave = synthesisService.SynthesisWave(new VoicevoxEngineSharp.Core.Acoustic.Models.AudioQuery
     {
