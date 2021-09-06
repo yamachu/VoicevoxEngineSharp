@@ -40,6 +40,7 @@ const string OpenJTalkDictPath = @"open_jtalk_dic_utf_8-1.11";
 var dictPath = parsedOptions.VoicevoxDir == null
     ? Path.Join(Directory.GetCurrentDirectory(), OpenJTalkDictPath)
     : Path.Join(parsedOptions.VoicevoxDir, "pyopenjtalk", OpenJTalkDictPath);
+
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddEndpointsApiExplorer();
@@ -47,12 +48,14 @@ builder.Services.AddSwaggerGen(c =>
 {
     c.SwaggerDoc("v1", new OpenApiInfo { Title = "voicevox_engine_sharp", Version = "v3" });
 });
+
 builder.Services.AddSingleton<IFullContextProvider>(new FullContextProvider(dictPath));
 builder.Services.AddSingleton<TextToUtterance>();
 if (parsedOptions.VoicevoxDir != null)
 {
     Directory.SetCurrentDirectory(parsedOptions.VoicevoxDir);
 }
+
 builder.Services.AddSingleton<SynthesisEngine>(SynthesisEngineBuilder.Initialize("1", "2", "3", parsedOptions.UseGpu, parsedOptions.UseCore));
 builder.Services.AddSingleton<Synthesis>();
 builder.Services.AddCors(options =>
@@ -75,14 +78,11 @@ app.UseCors("MyPolicy");
 app.UseSwagger();
 app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "voicevox_engine_sharp v1"));
 
-app.MapPost("/audio_query", async (context) =>
+app.MapPost("/audio_query", (int speaker, string text, Synthesis synthesisService) =>
 {
-    var synthesisService = context.RequestServices.GetService<Synthesis>();
-    var speaker = int.Parse(context.Request.Query.Single(v => v.Key == "speaker").Value.ToString());
-    var text = context.Request.Query.Single(v => v.Key == "text").Value.ToString();
     var accentPhrases = synthesisService.CreateAccentPhrases(text, speaker);
 
-    await context.Response.WriteAsJsonAsync(new AudioQuery
+    return new AudioQuery
     {
         AccentPhrases = accentPhrases.Select(v => AccentPhrase.FromDomain(v)),
         SpeedScale = 1,
@@ -94,47 +94,39 @@ app.MapPost("/audio_query", async (context) =>
         OutputSamlingRate = 24000,
         OutputStereo = false,
     });
-    return;
 });
 
-app.MapPost("/accent_phrases", async (context) =>
+app.MapPost("/accent_phrases", async (int speaker, string text, Synthesis synthesisService) =>
 {
-    var synthesisService = context.RequestServices.GetService<Synthesis>();
-    var speaker = int.Parse(context.Request.Query.Single(v => v.Key == "speaker").Value.ToString());
-    var text = context.Request.Query.Single(v => v.Key == "text").Value.ToString();
     var accentPhrases = synthesisService.CreateAccentPhrases(text, speaker);
 
-    await context.Response.WriteAsJsonAsync(accentPhrases.Select(v => AccentPhrase.FromDomain(v)));
-    return;
+    return accentPhrases.Select(v => AccentPhrase.FromDomain(v));
 });
 
-app.MapPost("/mora_pitch", async (context) =>
+app.MapPost("/mora_pitch", async (int speaker, Synthesis synthesisService) =>
 {
+    // This will be supported by default in .NET 6 https://github.com/dotnet/aspnetcore/pull/36118
     if (!context.Request.HasJsonContentType())
     {
         context.Response.StatusCode = (int)HttpStatusCode.UnsupportedMediaType;
         return;
     }
-    var synthesisService = context.RequestServices.GetService<Synthesis>();
+
     var request = await context.Request.ReadFromJsonAsync<IEnumerable<AccentPhrase>>();
-    var speaker = int.Parse(context.Request.Query.Single(v => v.Key == "speaker").Value.ToString());
     var accentPhrases = synthesisService.ReplaceMoraPitch(request.Select(v => AccentPhrase.ToDomain(v)), speaker);
 
-    await context.Response.WriteAsJsonAsync(accentPhrases.Select(v => AccentPhrase.FromDomain(v)));
-    return;
+    return accentPhrases.Select(v => AccentPhrase.FromDomain(v));
 });
 
-app.MapPost("/synthesis", async (context) =>
+app.MapPost("/synthesis", async (int speaker, Synthesis synthesisService, AudioQuery request) =>
 {
+    // This will be supported by default in .NET 6 https://github.com/dotnet/aspnetcore/pull/36118
     if (!context.Request.HasJsonContentType())
     {
         context.Response.StatusCode = (int)HttpStatusCode.UnsupportedMediaType;
         return;
     }
 
-    var synthesisService = context.RequestServices.GetService<Synthesis>();
-    var request = await context.Request.ReadFromJsonAsync<AudioQuery>();
-    var speaker = int.Parse(context.Request.Query.Single(v => v.Key == "speaker").Value.ToString());
     var wave = synthesisService.SynthesisWave(new VoicevoxEngineSharp.Core.Acoustic.Models.AudioQuery
     {
         AccentPhrases = request.AccentPhrases.Select(v => AccentPhrase.ToDomain(v)),
@@ -147,25 +139,24 @@ app.MapPost("/synthesis", async (context) =>
         OutputSamlingRate = request.OutputSamlingRate,
         OutputStereo = request.OutputStereo,
     }, speaker).ToArray();
-    using var stream = new MemoryStream();
+
+    var stream = new MemoryStream();
     using var writerStream = new WaveFileWriter(stream, WaveFormat.CreateIeeeFloatWaveFormat(24000, 1));
     writerStream.WriteSamples(wave, 0, wave.Length);
     stream.Position = 0;
-
-    context.Response.ContentType = "audio/wav";
-    await stream.CopyToAsync(context.Response.Body);
-    await context.Response.Body.FlushAsync();
-
-    return;
+    
+    return Results.Stream(stream, "audio/wav");
 });
 
 app.MapGet("/version", async () =>
 {
+    // TODO: Use Results.File
     return await System.IO.File.ReadAllTextAsync("VERSION.txt", encoding: System.Text.Encoding.UTF8);
 });
 
 app.MapGet("/speakers", async (context) =>
 {
+    // TODO: Use Results.Text(speakers, "application/json")
     var speakers = System.IO.File.ReadAllTextAsync("speakers.json", encoding: System.Text.Encoding.UTF8);
     await context.Response.WriteAsJsonAsync(speakers);
     return;
