@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Net;
 using CommandLine;
 using Microsoft.AspNetCore.Builder;
@@ -93,7 +93,7 @@ app.MapPost("/audio_query", (int speaker, string text, Synthesis synthesisServic
         PostPhonemeLength = 0.1f,
         OutputSamlingRate = 24000,
         OutputStereo = false,
-    });
+    };
 });
 
 app.MapPost("/accent_phrases", async (int speaker, string text, Synthesis synthesisService) =>
