@@ -139,9 +139,9 @@ app.MapPost("/synthesis", async (int speaker, Synthesis synthesisService, AudioQ
     }, speaker).ToArray();
 
     var stream = new MemoryStream();
-    using var writerStream = new WaveFileWriter(stream, WaveFormat.CreateIeeeFloatWaveFormat(24000, 1));
+    var writerStream = new WaveFileWriter(stream, WaveFormat.CreateIeeeFloatWaveFormat(24000, 1));
     writerStream.WriteSamples(wave, 0, wave.Length);
-    stream.Position = 0;
+    stream.Seek(0, SeekOrigin.Begin);
     
     return Results.Stream(stream, "audio/wav");
 });
