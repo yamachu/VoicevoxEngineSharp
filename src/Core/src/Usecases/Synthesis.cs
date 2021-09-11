@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using VoicevoxEngineSharp.Core.Acoustic.Models;
 using VoicevoxEngineSharp.Core.Acoustic.Usecases;
 using VoicevoxEngineSharp.Core.Language.Extensions;
@@ -18,7 +18,7 @@ namespace VoicevoxEngineSharp.Core.Usecases
 
         public IEnumerable<AccentPhrase> ReplaceMoraPitch(IEnumerable<AccentPhrase> accentPhrases, int speakerId)
         {
-            return _synthesisEngine.ExtractPhonemeF0(accentPhrases, speakerId);
+            return _synthesisEngine.ReplaceMoraData(accentPhrases, speakerId);
         }
 
         public IEnumerable<AccentPhrase> CreateAccentPhrases(string text, int speakerId)
@@ -35,9 +35,28 @@ namespace VoicevoxEngineSharp.Core.Usecases
                 {
                     return new AccentPhrase
                     {
+                        Moras = accentPhrase.Moras.Select((mora) =>
+                            new Mora
+                            {
+                                Text = mora.ToText(),
+                                Consonant = mora.Consonant == null ? null : mora.Consonant.GetPhoneme(),
+                                ConsonantLength = mora.Consonant == null ? null : 0,
+                                Vowel = mora.Vowel.GetPhoneme(),
+                                VowelLength = 0,
+                                Pitch = 0
+                            }),
                         Accent = accentPhrase.Accent,
-                        PauseMora = (iAccentPhrase == breathGroup.AccentPhrases.Count() - 1 && iBreathGroup != utterance.BreathGroups.Count() - 1) ? new Mora { Text = "、", Consonant = null, Vowel = "pau", Pitch = 0 } : null,
-                        Moras = accentPhrase.Moras.Select((mora) => new Mora { Text = mora.ToText(), Consonant = mora.Consonant == null ? null : mora.Consonant.GetPhoneme(), Vowel = mora.Vowel.GetPhoneme(), Pitch = 0 })
+                        PauseMora = (iAccentPhrase == breathGroup.AccentPhrases.Count() - 1 && iBreathGroup != utterance.BreathGroups.Count() - 1)
+                            ? new Mora
+                            {
+                                Text = "、",
+                                Consonant = null,
+                                ConsonantLength = null,
+                                Vowel = "pau",
+                                VowelLength = 0,
+                                Pitch = 0
+                            }
+                            : null,
                     };
                 });
             });

@@ -37,7 +37,7 @@ namespace VoicevoxEngineSharp.Core.Acoustic.Usecases
             DecodeForward = decodeForwardImpl;
         }
 
-        internal IEnumerable<AccentPhrase> ExtractPhonemeF0(IEnumerable<AccentPhrase> accentPhrases, int speakerId)
+        internal IEnumerable<AccentPhrase> ReplaceMoraData(IEnumerable<AccentPhrase> accentPhrases, int speakerId)
         {
             // NOTE: こいつに対して破壊的操作をするっぽい
             var flattenMoras = accentPhrases.ToFlattenMoras();
@@ -105,9 +105,12 @@ namespace VoicevoxEngineSharp.Core.Acoustic.Usecases
 
             var phonemeDataList = phonemeStrList.ToOjtPhonemeDataList();
 
-            var (consonantPhonemeDataList, vowelPhonemeDataList, vowelIndexedData) = phonemeDataList.SplitMora();
+            var (consonantPhonemeDataList, vowelPhonemeDataList, vowelIndexesData) = phonemeDataList.SplitMora();
 
-            var vowelIndexes = np.array(vowelIndexedData, dtype: typeof(long));
+            var phonemeListS = phonemeDataList.Select(p => (long)p.PhonemeId).ToArray();
+            var phonemeLength = YukarinSForward(phonemeListS.Length, phonemeListS, new long[] { speakerId });
+
+            var vowelIndexes = np.array(vowelIndexesData, dtype: typeof(long));
             var vowelPhonemeList = np.array(vowelPhonemeDataList.Select(p => p.PhonemeId).ToArray(), dtype: typeof(long));
             var consonantPhonemeList = np.array(consonantPhonemeDataList.Select(p => p == null ? -1 : p.PhonemeId).ToArray(), dtype: typeof(long));
 
@@ -133,6 +136,8 @@ namespace VoicevoxEngineSharp.Core.Acoustic.Usecases
             foreach (var (mora, i) in flattenMoras.Select((p, i) => (p, i)))
             {
                 mora.Pitch = f0List[i + 1];
+                mora.ConsonantLength = mora.Consonant == null ? null : phonemeLength[vowelIndexesData[i + 1] - 1];
+                mora.VowelLength = phonemeLength[vowelIndexesData[i + 1]];
             }
 
             var ind = 0;
@@ -164,9 +169,11 @@ namespace VoicevoxEngineSharp.Core.Acoustic.Usecases
             var phonemeDataList = phonemeStrList.ToOjtPhonemeDataList();
             var phonemeListS = phonemeDataList.Select(v => (long)v.PhonemeId);
 
-            var phonemeLength = YukarinSForward(phonemeDataList.Count(), phonemeListS.ToArray(), new long[] { speakerId });
-            phonemeLength[0] = audioQuery.PrePhonemeLength;
-            phonemeLength[^1] = audioQuery.PostPhonemeLength;
+            var phonemeLengthList = Enumerable.Concat(
+                new[] { audioQuery.PrePhonemeLength },
+                flattenMoras.SelectMany(mora => mora.Consonant == null ? new[] { mora.VowelLength } : Enumerable.Concat(new float[] { mora.ConsonantLength.Value }, new float[] { mora.VowelLength }))
+            ).Concat(new[] { audioQuery.PostPhonemeLength });
+            var phonemeLength = phonemeLengthList.Cast<float>().ToArray();
 
             var ndPhonemeLength = (np.round_(new NDArray<float>(phonemeLength, new Shape(phonemeLength.Length)) * rate, typeof(float)) / rate) / audioQuery.SpeedScale;
 
