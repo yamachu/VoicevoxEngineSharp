@@ -104,7 +104,7 @@ app.MapPost("/accent_phrases", async (int speaker, string text, Synthesis synthe
     return accentPhrases.Select(v => AccentPhrase.FromDomain(v));
 });
 
-app.MapPost("/mora_pitch", async (int speaker, Synthesis synthesisService, HttpContext context) =>
+app.MapPost("/mora_data", async (int speaker, Synthesis synthesisService, HttpContext context) =>
 {
     // This will be supported by default in .NET 6 https://github.com/dotnet/aspnetcore/pull/36118
     if (!context.Request.HasJsonContentType())
