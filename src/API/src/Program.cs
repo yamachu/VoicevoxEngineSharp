@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Net;
 using CommandLine;
 using Microsoft.AspNetCore.Builder;
@@ -119,11 +119,11 @@ app.MapPost("/mora_pitch", async (int speaker, Synthesis synthesisService, HttpC
 
 app.MapPost("/synthesis", async (int speaker, Synthesis synthesisService, AudioQuery request, HttpContext context) =>
 {
-   // This will be supported by default in .NET 6 https://github.com/dotnet/aspnetcore/pull/36118
-   if (!context.Request.HasJsonContentType())
-   {
-       throw new BadHttpRequestException("unsupporterd media type", StatusCodes.Status415UnsupportedMediaType);
-   }
+    // This will be supported by default in .NET 6 https://github.com/dotnet/aspnetcore/pull/36118
+    if (!context.Request.HasJsonContentType())
+    {
+        throw new BadHttpRequestException("unsupporterd media type", StatusCodes.Status415UnsupportedMediaType);
+    }
 
     var wave = synthesisService.SynthesisWave(new VoicevoxEngineSharp.Core.Acoustic.Models.AudioQuery
     {
@@ -142,7 +142,7 @@ app.MapPost("/synthesis", async (int speaker, Synthesis synthesisService, AudioQ
     var writerStream = new WaveFileWriter(stream, WaveFormat.CreateIeeeFloatWaveFormat(24000, 1));
     writerStream.WriteSamples(wave, 0, wave.Length);
     stream.Seek(0, SeekOrigin.Begin);
-    
+
     return Results.Stream(stream, "audio/wav");
 });
 
