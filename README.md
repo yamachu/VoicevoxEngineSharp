@@ -33,7 +33,7 @@
 dotnet run --project src/API/src -- --voicevox_dir "C:/path/to/voicevox"
 
 # VOICEVOX CORE を使用する場合
-dotnet build src/API/src/API.csproj ; cd src/API/src/bin/Debug/net6.0 ; dotnet API.dll -- -- use_core
+dotnet build src/API/src/API.csproj ; cd src/API/src/bin/Debug/net6.0 ; dotnet API.dll
 ```
 
 その他の引数は VOICEVOX ENGINE に準拠しています
@@ -43,7 +43,6 @@ dotnet build src/API/src/API.csproj ; cd src/API/src/bin/Debug/net6.0 ; dotnet A
 ### 稀に生成される音声がノイズだらけになって聞き取れない
 
 Engine の再起動をお試しください。
-また Engine のディレクトリに each_cpp_forwarder.{dll, so} と core.{dll, so} が共存していると正常に動作しない事象が確認されています。
 
 ### 実装されていない機能がある
 
