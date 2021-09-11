@@ -6,21 +6,17 @@ namespace VoicevoxEngineSharp.Core.Acoustic.Usecases
 {
     public class SynthesisEngineBuilder
     {
-        public static SynthesisEngine Initialize(string yukarin_s_forwarder_path,
-            string yukarin_sa_forwarder_path,
-            string decode_forwarder_path,
-            bool use_gpu,
-            bool useCore = false)
+        // root_dir_path requires trailing slash or back-slash
+        public static SynthesisEngine Initialize(string root_dir_path, bool use_gpu)
         {
-            Func<string, string, string, bool, bool> initialize = useCore ? Native.Core.Initialize : Native.EachCppForwarder.Initialize;
-            if (!initialize(yukarin_s_forwarder_path, yukarin_sa_forwarder_path, decode_forwarder_path, use_gpu))
+            if (!Native.Core.Initialize(root_dir_path, use_gpu))
             {
                 throw new ArgumentException("Failed to initialize library, verify passed arguments");
             }
             return new SynthesisEngine(
-                useCore ? Native.Core.YukarinSForward : Native.EachCppForwarder.YukarinSForward,
-                useCore ? Native.Core.YukarinSaForward : Native.EachCppForwarder.YukarinSaForward,
-                useCore ? Native.Core.DecodeForward : Native.EachCppForwarder.DecodeForward
+                Native.Core.YukarinSForward,
+                Native.Core.YukarinSaForward,
+                Native.Core.DecodeForward
             );
         }
     }
