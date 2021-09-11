@@ -52,3 +52,7 @@ Engine の再起動をお試しください。
 などの機能が未実装
 
 Welcome contribute!
+
+## ライセンス
+
+本家 [VOICEVOX ENGINE](https://github.com/Hiroshiba/voicevox_engine) のライセンスを継承し、LGPL v3
