@@ -2,11 +2,9 @@
 {
     internal interface IAcousticDNNLibrary
     {
-        static bool Initialize(
-            string yukarin_s_forwarder_path,
-            string yukarin_sa_forwarder_path,
-            string decode_forwarder_path,
-            bool use_gpu) => throw new NotImplementedException();
+        static bool Initialize(string root_dir_path, bool use_gpu)
+            => throw new NotImplementedException();
+
 
         static float[] YukarinSForward(int length, long[] phoneme_list, long[] speaker_id)
             => throw new NotImplementedException();

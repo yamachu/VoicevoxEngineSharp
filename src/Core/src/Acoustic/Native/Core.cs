@@ -1,12 +1,20 @@
-﻿namespace VoicevoxEngineSharp.Core.Acoustic.Native
+﻿using System.Runtime.InteropServices;
+
+namespace VoicevoxEngineSharp.Core.Acoustic.Native
 {
     internal class Core : IAcousticDNNLibrary
     {
-        public static bool Initialize(
-            string yukarin_s_forwarder_path,
-            string yukarin_sa_forwarder_path,
-            string decode_forwarder_path,
-            bool use_gpu) => CoreUnmanaged.initialize(yukarin_s_forwarder_path, yukarin_sa_forwarder_path, decode_forwarder_path, use_gpu);
+        public static bool Initialize(string root_dir_path, bool use_gpu)
+            => CoreUnmanaged.initialize(root_dir_path, use_gpu);
+
+        public static string Metas()
+        {
+            var resultPtr = CoreUnmanaged.metas();
+            var result = Marshal.PtrToStringUTF8(resultPtr);
+            Marshal.FreeHGlobal(resultPtr);
+
+            return result;
+        }
 
         public static float[] YukarinSForward(int length, long[] phoneme_list, long[] speaker_id)
         {

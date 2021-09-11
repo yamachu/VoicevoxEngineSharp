@@ -6,12 +6,11 @@ namespace VoicevoxEngineSharp.Core.Acoustic.Native
     {
         private const string DllName = "core";
 
-        [DllImport(DllName, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
-        public static extern bool initialize(
-            string yukarin_s_forwarder_path,
-            string yukarin_sa_forwarder_path,
-            string decode_forwarder_path,
-            bool use_gpu);
+        [DllImport(DllName, CallingConvention = CallingConvention.Cdecl)]
+        public static extern bool initialize(string root_dir_path, bool use_gpu);
+
+        [DllImport(DllName, CallingConvention = CallingConvention.Cdecl)]
+        public static extern IntPtr metas();
 
         [DllImport(DllName, CallingConvention = CallingConvention.Cdecl)]
         public static extern bool yukarin_s_forward(
