@@ -56,7 +56,8 @@ if (parsedOptions.VoicevoxDir != null)
     Directory.SetCurrentDirectory(parsedOptions.VoicevoxDir);
 }
 
-builder.Services.AddSingleton<SynthesisEngine>(SynthesisEngineBuilder.Initialize("1", "2", "3", parsedOptions.UseGpu, parsedOptions.UseCore));
+// FIXME
+builder.Services.AddSingleton<SynthesisEngine>(SynthesisEngineBuilder.Initialize(parsedOptions.VoicevoxDir ?? Directory.GetCurrentDirectory() + Path.DirectorySeparatorChar, parsedOptions.UseGpu));
 builder.Services.AddSingleton<Synthesis>();
 builder.Services.AddCors(options =>
 {
@@ -185,7 +186,4 @@ internal class CommandLineOptions
     // 今後作りを変える
     [Option(longName: "voiceliv_dir", Required = false, Default = null)]
     public string? VoicelibDir { get; set; }
-
-    [Option(longName: "use_core", Required = false, Default = false)]
-    public bool UseCore { get; set; }
 }
