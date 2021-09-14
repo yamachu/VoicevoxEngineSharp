@@ -1,4 +1,6 @@
-﻿namespace VoicevoxEngineSharp.Core.Acoustic.Native
+﻿using System;
+
+namespace VoicevoxEngineSharp.Core.Acoustic.Native
 {
     internal interface IAcousticDNNLibrary
     {
