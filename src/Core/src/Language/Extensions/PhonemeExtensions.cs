@@ -1,4 +1,6 @@
-﻿namespace VoicevoxEngineSharp.Core.Language.Extensions
+﻿using System.Linq;
+
+namespace VoicevoxEngineSharp.Core.Language.Extensions
 {
     internal static class PhonemeExtensions
     {
