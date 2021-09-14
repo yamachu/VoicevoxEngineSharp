@@ -8,11 +8,10 @@
 ## 動作要件
 
 - [.NET 6.0](https://dotnet.microsoft.com/download/dotnet/6.0)
-  - preview.7 で動作確認済み
-  - 現在 .NET 6.0 はPreviewのため、エディタによっては対応していない場合があります、ご注意ください
-    - VSCode + C# Extension 環境下では API の補完が稀に効かなくなったり、補完のための機能がクラッシュします
+  - rc.1
+  - 現在 .NET 6.0 は Stable Release ではないため、エディタによっては対応していない場合があります、ご注意ください
+    - VSCode + C# Extension 環境下では API の補完が稀に効かなくなったり、補完のための機能がクラッシュする場合があります
     - Visual Studio 2022 Preview を推奨
-      - Version 17.0.0 Preview 3.1 環境下で IDE からテストを実行すると一部テストがfailedします
 
 ## 準備
 
