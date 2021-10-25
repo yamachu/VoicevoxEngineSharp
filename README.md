@@ -8,7 +8,7 @@
 ## 動作要件
 
 - [.NET 6.0](https://dotnet.microsoft.com/download/dotnet/6.0)
-  - rc.1
+  - rc.2
   - 現在 .NET 6.0 は Stable Release ではないため、エディタによっては対応していない場合があります、ご注意ください
     - VSCode + C# Extension 環境下では API の補完が稀に効かなくなったり、補完のための機能がクラッシュする場合があります
     - Visual Studio 2022 Preview を推奨
