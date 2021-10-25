@@ -45,8 +45,10 @@ Engine の再起動をお試しください。
 
 ### 実装されていない機能がある
 
-- [ ] モノラルステレオ選択
-- [ ] サンプリングレートの変更
+音声合成に直接関係しないUtil的な機能が未実装です
+
+- [ ] モノラルステレオ選択 (https://github.com/Hiroshiba/voicevox_engine/pull/39)
+- [ ] サンプリングレートの変更 (https://github.com/Hiroshiba/voicevox_engine/pull/33)
 
 などの機能が未実装
 
