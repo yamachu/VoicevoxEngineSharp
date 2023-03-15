@@ -14,7 +14,8 @@ fn main() -> Result<(), Box<dyn Error>> {
         .to_string()
         // i32なのにu32に変わっている
         .replace("#[repr(u32)]", "#[repr(i32)]")
-        // 同名のenumが存在かつput typeでaliasを張っているとcsbindgenでi32に置き換えられてしまうことの対策
+        // 同名のenumが存在かつpub typeでaliasを張っているとcsbindgenでi32に置き換えられてしまうことの対策
+        // むしろpub typeが吐き出されることがおかしいのでは…？defined multiple timesで怒られるはず
         .replace(
             "pub type VoicevoxAccelerationMode = i32;",
             "// pub type VoicevoxAccelerationMode = i32;",
