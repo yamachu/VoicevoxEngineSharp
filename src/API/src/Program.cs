@@ -100,6 +100,11 @@ app.MapPost("/audio_query", (int speaker, string text, Synthesis synthesisServic
     };
 });
 
+app.MapPost("/audio_query_from_preset", () =>
+{
+    return Results.Problem("Not Implemented", statusCode: 500);
+});
+
 app.MapPost("/accent_phrases", async (int speaker, string text, Synthesis synthesisService) =>
 {
     var accentPhrases = synthesisService.CreateAccentPhrases(text, speaker);
@@ -178,10 +183,40 @@ app.MapPost("/synthesis", async (int speaker, Synthesis synthesisService, AudioQ
     return Results.Stream(stream, "audio/wav");
 });
 
+app.MapPost("/cancellable_synthesis", () =>
+{
+    return Results.Problem("Not Implemented", statusCode: 500);
+});
+
+app.MapPost("/multi_synthesis", () =>
+{
+    return Results.Problem("Not Implemented", statusCode: 500);
+});
+
+app.MapPost("/synthesis_synthesis", () =>
+{
+    return Results.Problem("Not Implemented", statusCode: 500);
+});
+
+app.MapPost("/connect_waves", () =>
+{
+    return Results.Problem("Not Implemented", statusCode: 500);
+});
+
+app.MapGet("/presets", () =>
+{
+    return Results.Problem("Not Implemented", statusCode: 500);
+});
+
 app.MapGet("/version", async () =>
 {
     // TODO: Use Results.File
     return await System.IO.File.ReadAllTextAsync("VERSION.txt", encoding: System.Text.Encoding.UTF8);
+});
+
+app.MapGet("/core_versions", () =>
+{
+    return Results.Problem("Not Implemented", statusCode: 500);
 });
 
 app.MapGet("/speakers", async (context) =>
@@ -191,6 +226,39 @@ app.MapGet("/speakers", async (context) =>
     await context.Response.WriteAsJsonAsync(speakers);
     return;
 });
+
+app.MapGet("/speaker_info", () =>
+{
+    return Results.Problem("Not Implemented", statusCode: 500);
+});
+
+app.MapGet("/user_dict", () =>
+{
+    return Results.Problem("Not Implemented", statusCode: 500);
+});
+
+
+app.MapPost("/user_dict_word", () =>
+{
+    return Results.Problem("Not Implemented", statusCode: 500);
+});
+
+
+app.MapPut("/user_dict_word/{word_uuid}", () =>
+{
+    return Results.Problem("Not Implemented", statusCode: 500);
+});
+
+app.MapDelete("/user_dict_word/{word_uuid}", () =>
+{
+    return Results.Problem("Not Implemented", statusCode: 500);
+});
+
+app.MapGet("/supported_devices", () =>
+{
+    return Results.Problem("Not Implemented", statusCode: 500);
+});
+
 
 app.Run($"http://{parsedOptions.Host}:{parsedOptions.Port}");
 
@@ -215,6 +283,22 @@ internal class CommandLineOptions
     // NOTE: each_cpp_forwarderがevalされたDirと同じディレクトリ内のvoicelibを探索するため、
     // DllImport でNativeメソッドを呼び出し出来るようにしている今の作りと組み合わせが良くない
     // 今後作りを変える
-    [Option(longName: "voiceliv_dir", Required = false, Default = null)]
+    [Option(longName: "voicelib_dir", Required = false, Default = null)]
     public string? VoicelibDir { get; set; }
+
+    [Option(longName: "runtime_dir", Required = false, Default = null)]
+    public string? RuntimeDir { get; set; }
+
+    [Option(longName: "enable_mock", Required = false, Default = false)]
+    public bool EnableMock { get; set; }
+
+    [Option(longName: "enable_cancellable_synthesis", Required = false, Default = false)]
+    public bool EnableCancellableSynthesis { get; set; }
+
+    [Option(longName: "init_processes", Required = false, Default = 2)]
+    public int InitProcesses { get; set; }
+
+    // FIXME
+    [Option(longName: "cpu_num_threads", Required = false, Default = null)]
+    public int? CpuNumThreads { get; set; }
 }
