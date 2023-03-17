@@ -12,77 +12,101 @@ namespace VoicevoxEngineSharp.Core.Native
     {
         const string __DllName = "voicevox_core";
 
+        /// <summary>@return デフォルト値が設定された初期化オプション</summary>
         [DllImport(__DllName, EntryPoint = "voicevox_make_default_initialize_options", CallingConvention = CallingConvention.Cdecl, ExactSpelling = true)]
         public static extern VoicevoxInitializeOptions voicevox_make_default_initialize_options();
 
+        /// <summary>@return 結果コード #VoicevoxResultCode</summary>
         [DllImport(__DllName, EntryPoint = "voicevox_initialize", CallingConvention = CallingConvention.Cdecl, ExactSpelling = true)]
         public static extern VoicevoxResultCode voicevox_initialize(VoicevoxInitializeOptions options);
 
+        /// <summary>@return SemVerでフォーマットされたバージョン</summary>
         [DllImport(__DllName, EntryPoint = "voicevox_get_version", CallingConvention = CallingConvention.Cdecl, ExactSpelling = true)]
         public static extern byte* voicevox_get_version();
 
+        /// <summary>@return 結果コード #VoicevoxResultCode</summary>
         [DllImport(__DllName, EntryPoint = "voicevox_load_model", CallingConvention = CallingConvention.Cdecl, ExactSpelling = true)]
         public static extern VoicevoxResultCode voicevox_load_model(uint speaker_id);
 
+        /// <summary>@return GPUモードならtrue、そうでないならfalse</summary>
         [DllImport(__DllName, EntryPoint = "voicevox_is_gpu_mode", CallingConvention = CallingConvention.Cdecl, ExactSpelling = true)]
         [return: MarshalAs(UnmanagedType.U1)]
         public static extern bool voicevox_is_gpu_mode();
 
+        /// <summary>@return モデルが読み込まれているのであればtrue、そうでないならfalse</summary>
         [DllImport(__DllName, EntryPoint = "voicevox_is_model_loaded", CallingConvention = CallingConvention.Cdecl, ExactSpelling = true)]
         [return: MarshalAs(UnmanagedType.U1)]
         public static extern bool voicevox_is_model_loaded(uint speaker_id);
 
+        /// <summary>このライブラリの利用を終了し、確保しているリソースを解放する</summary>
         [DllImport(__DllName, EntryPoint = "voicevox_finalize", CallingConvention = CallingConvention.Cdecl, ExactSpelling = true)]
         public static extern void voicevox_finalize();
 
+        /// <summary>@return メタ情報のjson文字列</summary>
         [DllImport(__DllName, EntryPoint = "voicevox_get_metas_json", CallingConvention = CallingConvention.Cdecl, ExactSpelling = true)]
         public static extern byte* voicevox_get_metas_json();
 
+        /// <summary>@return サポートデバイス情報のjson文字列</summary>
         [DllImport(__DllName, EntryPoint = "voicevox_get_supported_devices_json", CallingConvention = CallingConvention.Cdecl, ExactSpelling = true)]
         public static extern byte* voicevox_get_supported_devices_json();
 
+        /// <summary>@param output_predict_duration_data 成功後にメモリ領域が割り当てられるので ::voicevox_predict_duration_data_free で解放する必要がある</summary>
         [DllImport(__DllName, EntryPoint = "voicevox_predict_duration", CallingConvention = CallingConvention.Cdecl, ExactSpelling = true)]
         public static extern VoicevoxResultCode voicevox_predict_duration(nuint length, long* phoneme_vector, uint speaker_id, nuint* output_predict_duration_data_length, float** output_predict_duration_data);
 
+        /// <summary>@param predict_duration_data 実行後に割り当てられたメモリ領域が解放される</summary>
         [DllImport(__DllName, EntryPoint = "voicevox_predict_duration_data_free", CallingConvention = CallingConvention.Cdecl, ExactSpelling = true)]
         public static extern void voicevox_predict_duration_data_free(float* predict_duration_data);
 
+        /// <summary>@param output_predict_intonation_data 成功後にメモリ領域が割り当てられるので ::voicevox_predict_intonation_data_free で解放する必要がある</summary>
         [DllImport(__DllName, EntryPoint = "voicevox_predict_intonation", CallingConvention = CallingConvention.Cdecl, ExactSpelling = true)]
         public static extern VoicevoxResultCode voicevox_predict_intonation(nuint length, long* vowel_phoneme_vector, long* consonant_phoneme_vector, long* start_accent_vector, long* end_accent_vector, long* start_accent_phrase_vector, long* end_accent_phrase_vector, uint speaker_id, nuint* output_predict_intonation_data_length, float** output_predict_intonation_data);
 
+        /// <summary>@param predict_intonation_data 実行後に割り当てられたメモリ領域が解放される</summary>
         [DllImport(__DllName, EntryPoint = "voicevox_predict_intonation_data_free", CallingConvention = CallingConvention.Cdecl, ExactSpelling = true)]
         public static extern void voicevox_predict_intonation_data_free(float* predict_intonation_data);
 
+        /// <summary>@param output_decode_data 成功後にメモリ領域が割り当てられるので ::voicevox_decode_data_free で解放する必要がある</summary>
         [DllImport(__DllName, EntryPoint = "voicevox_decode", CallingConvention = CallingConvention.Cdecl, ExactSpelling = true)]
         public static extern VoicevoxResultCode voicevox_decode(nuint length, nuint phoneme_size, float* f0, float* phoneme_vector, uint speaker_id, nuint* output_decode_data_length, float** output_decode_data);
 
+        /// <summary>@param decode_data 実行後に割り当てられたメモリ領域が解放される</summary>
         [DllImport(__DllName, EntryPoint = "voicevox_decode_data_free", CallingConvention = CallingConvention.Cdecl, ExactSpelling = true)]
         public static extern void voicevox_decode_data_free(float* decode_data);
 
+        /// <summary>@return デフォルト値が設定された AudioQuery オプション</summary>
         [DllImport(__DllName, EntryPoint = "voicevox_make_default_audio_query_options", CallingConvention = CallingConvention.Cdecl, ExactSpelling = true)]
         public static extern VoicevoxAudioQueryOptions voicevox_make_default_audio_query_options();
 
+        /// <summary>@param output_audio_query_json 自動でheapメモリが割り当てられるので ::voicevox_audio_query_json_free で解放する必要がある</summary>
         [DllImport(__DllName, EntryPoint = "voicevox_audio_query", CallingConvention = CallingConvention.Cdecl, ExactSpelling = true)]
         public static extern VoicevoxResultCode voicevox_audio_query(byte* text, uint speaker_id, VoicevoxAudioQueryOptions options, byte** output_audio_query_json);
 
+        /// <summary>@return デフォルト値が設定された `voicevox_synthesis` のオプション</summary>
         [DllImport(__DllName, EntryPoint = "voicevox_make_default_synthesis_options", CallingConvention = CallingConvention.Cdecl, ExactSpelling = true)]
         public static extern VoicevoxSynthesisOptions voicevox_make_default_synthesis_options();
 
+        /// <summary>@param output_wav 自動で output_wav_length 分のデータが割り当てられるので ::voicevox_wav_free で解放する必要がある</summary>
         [DllImport(__DllName, EntryPoint = "voicevox_synthesis", CallingConvention = CallingConvention.Cdecl, ExactSpelling = true)]
         public static extern VoicevoxResultCode voicevox_synthesis(byte* audio_query_json, uint speaker_id, VoicevoxSynthesisOptions options, nuint* output_wav_length, byte** output_wav);
 
+        /// <summary>@return テキスト音声合成オプション</summary>
         [DllImport(__DllName, EntryPoint = "voicevox_make_default_tts_options", CallingConvention = CallingConvention.Cdecl, ExactSpelling = true)]
         public static extern VoicevoxTtsOptions voicevox_make_default_tts_options();
 
+        /// <summary>@param output_wav は自動で output_wav_length 分のデータが割り当てられるので ::voicevox_wav_free で解放する必要がある</summary>
         [DllImport(__DllName, EntryPoint = "voicevox_tts", CallingConvention = CallingConvention.Cdecl, ExactSpelling = true)]
         public static extern VoicevoxResultCode voicevox_tts(byte* text, uint speaker_id, VoicevoxTtsOptions options, nuint* output_wav_length, byte** output_wav);
 
+        /// <summary>@param wav 確保したメモリ領域が破棄される</summary>
         [DllImport(__DllName, EntryPoint = "voicevox_audio_query_json_free", CallingConvention = CallingConvention.Cdecl, ExactSpelling = true)]
         public static extern void voicevox_audio_query_json_free(byte* audio_query_json);
 
+        /// <summary>@param wav 確保したメモリ領域が破棄される</summary>
         [DllImport(__DllName, EntryPoint = "voicevox_wav_free", CallingConvention = CallingConvention.Cdecl, ExactSpelling = true)]
         public static extern void voicevox_wav_free(byte* wav);
 
+        /// <summary>@return 結果コードを元に変換されたメッセージ文字列</summary>
         [DllImport(__DllName, EntryPoint = "voicevox_error_result_to_message", CallingConvention = CallingConvention.Cdecl, ExactSpelling = true)]
         public static extern byte* voicevox_error_result_to_message(VoicevoxResultCode result_code);
 
@@ -118,13 +142,6 @@ namespace VoicevoxEngineSharp.Core.Native
     }
 
 
-    internal enum VoicevoxAccelerationMode : int
-    {
-        VOICEVOX_ACCELERATION_MODE_AUTO = 0,
-        VOICEVOX_ACCELERATION_MODE_CPU = 1,
-        VOICEVOX_ACCELERATION_MODE_GPU = 2,
-    }
-
     internal enum VoicevoxResultCode : int
     {
         VOICEVOX_RESULT_OK = 0,
@@ -141,6 +158,13 @@ namespace VoicevoxEngineSharp.Core.Native
         VOICEVOX_RESULT_INVALID_UTF8_INPUT_ERROR = 11,
         VOICEVOX_RESULT_PARSE_KANA_ERROR = 12,
         VOICEVOX_RESULT_INVALID_AUDIO_QUERY_ERROR = 13,
+    }
+
+    internal enum VoicevoxAccelerationMode : int
+    {
+        VOICEVOX_ACCELERATION_MODE_AUTO = 0,
+        VOICEVOX_ACCELERATION_MODE_CPU = 1,
+        VOICEVOX_ACCELERATION_MODE_GPU = 2,
     }
 
 
