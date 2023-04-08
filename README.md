@@ -5,13 +5,15 @@
 本家エンジンと Interface で互換性があります。
 内部実装に一部差異があるため、出力される音声やクエリの結果が一部異なる場合があります。
 
-## 動作要件
+## 最低動作要件
 
 - [.NET 6.0](https://dotnet.microsoft.com/download/dotnet/6.0)
-  - rc.2
-  - 現在 .NET 6.0 は Stable Release ではないため、エディタによっては対応していない場合があります、ご注意ください
-    - VSCode + C# Extension 環境下では API の補完が稀に効かなくなったり、補完のための機能がクラッシュする場合があります
-    - Visual Studio 2022 Preview を推奨
+
+## 開発状況
+
+0.14.x の VOICEVOX CORE に追従する大規模な変更を https://github.com/yamachu/VoicevoxEngineSharp/tree/nextCore
+
+で実施しています
 
 ## 準備
 
