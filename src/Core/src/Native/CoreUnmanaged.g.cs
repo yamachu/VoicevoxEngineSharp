@@ -187,14 +187,14 @@ namespace VoicevoxEngineSharp.Core.Native
     }
 
 
-    internal enum VoicevoxAccelerationMode : uint
+    internal enum VoicevoxAccelerationMode : int
     {
         VOICEVOX_ACCELERATION_MODE_AUTO = 0,
         VOICEVOX_ACCELERATION_MODE_CPU = 1,
         VOICEVOX_ACCELERATION_MODE_GPU = 2,
     }
 
-    internal enum VoicevoxResultCode : uint
+    internal enum VoicevoxResultCode : int
     {
         VOICEVOX_RESULT_OK = 0,
         VOICEVOX_RESULT_NOT_LOADED_OPENJTALK_DICT_ERROR = 1,
@@ -222,7 +222,7 @@ namespace VoicevoxEngineSharp.Core.Native
         VOICEVOX_RESULT_INVALID_UUID_ERROR = 25,
     }
 
-    internal enum VoicevoxUserDictWordType : uint
+    internal enum VoicevoxUserDictWordType : int
     {
         VOICEVOX_USER_DICT_WORD_TYPE_PROPER_NOUN = 0,
         VOICEVOX_USER_DICT_WORD_TYPE_COMMON_NOUN = 1,
