@@ -1,34 +1,24 @@
-use std::{error::Error, fs};
+use std::error::Error;
 
 fn main() -> Result<(), Box<dyn Error>> {
-    let generated_source = bindgen::Builder::default()
+    bindgen::Builder::default()
+        .clang_args(&["-x", "c++"])
         .header("voicevox_core/crates/voicevox_core_c_api/include/voicevox_core.h")
         .default_enum_style(bindgen::EnumVariation::Rust {
             non_exhaustive: false,
         })
-        .generate()?
-        .to_string()
-        // 同名のenumが存在かつpub typeでaliasを張っているとcsbindgenでi32に置き換えられてしまうことの対策
-        .replace(
-            "pub type VoicevoxAccelerationMode = i32;",
-            "// pub type VoicevoxAccelerationMode = i32;",
-        )
-        .replace(
-            "pub type VoicevoxResultCode = i32;",
-            "// pub type VoicevoxResultCode = i32;",
-        )
-        .replace(
-            "pub type VoicevoxUserDictWordType = i32",
-            "// pub type VoicevoxUserDictWordType = i32",
-        );
-
-    fs::write("./generated/voicevox_core.g.rs", generated_source)?;
+        .generate()
+        .unwrap()
+        .write_to_file("./generated/voicevox_core.g.rs")
+        .unwrap();
 
     csbindgen::Builder::default()
         .input_bindgen_file("generated/voicevox_core.g.rs")
         .csharp_dll_name("voicevox_core")
         .csharp_class_name("CoreUnmanaged")
         .csharp_namespace("VoicevoxEngineSharp.Core.Native")
+        // abortっていうのが勝手に足されてしまうので、スキップしている
+        .method_filter(|method| !method.starts_with("abort"))
         // TODO: MAUI iOS
         // see: https://github.com/xamarin/xamarin-macios/issues/17418
         .csharp_dll_name_if("UNITY_IOS && !UNITY_EDITOR", "__Internal")
