@@ -28,6 +28,7 @@ fn main() -> Result<(), Box<dyn Error>> {
         )
         .unwrap();
 
+    // TODO: Rustのdocsを反映するにはcsbindgenから直接生成する必要がある
     // let core_added_builder = glob("./voicevox_core/crates/voicevox_core/src/**/*.rs").into_iter()
     // .fold(csbindgen::Builder::default(), |builder, paths| {
     //     paths.into_iter().fold(builder, |builder, path|
