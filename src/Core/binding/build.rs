@@ -15,7 +15,7 @@ fn main() -> Result<(), Box<dyn Error>> {
     csbindgen::Builder::default()
         .input_bindgen_file("generated/voicevox_core.g.rs")
         .csharp_dll_name("voicevox_core")
-        .csharp_class_name("CoreUnmanaged")
+        .csharp_class_name("CoreUnsafe")
         .csharp_namespace("VoicevoxEngineSharp.Core.Native")
         // abortっていうのが勝手に足されてしまうので、スキップしている
         .method_filter(|method| !method.starts_with("abort"))
@@ -24,7 +24,7 @@ fn main() -> Result<(), Box<dyn Error>> {
         .csharp_dll_name_if("UNITY_IOS && !UNITY_EDITOR", "__Internal")
         .generate_to_file(
             "generated/voicevox_core_ffi.g.rs",
-            "../src/Native/CoreUnmanaged.g.cs",
+            "../src/Native/CoreUnsafe.g.cs",
         )
         .unwrap();
 

@@ -9,7 +9,7 @@ using System.Runtime.InteropServices;
 
 namespace VoicevoxEngineSharp.Core.Native
 {
-    internal static unsafe partial class CoreUnmanaged
+    internal static unsafe partial class CoreUnsafe
     {
 #if UNITY_IOS && !UNITY_EDITOR
         const string __DllName = "__Internal";
