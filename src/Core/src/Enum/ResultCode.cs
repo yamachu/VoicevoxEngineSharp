@@ -106,9 +106,9 @@ namespace VoicevoxEngineSharp.Core.Enum
         RESULT_INVALID_UUID_ERROR = 25,
     }
 
-    internal static class ResultCodeExt
+    public static class ResultCodeExt
     {
-        public static ResultCode FromNative(this VoicevoxResultCode code)
+        internal static ResultCode FromNative(this VoicevoxResultCode code)
         {
             return code switch
             {
@@ -140,7 +140,7 @@ namespace VoicevoxEngineSharp.Core.Enum
             };
         }
 
-        public static VoicevoxResultCode ToNative(this ResultCode code)
+        internal static VoicevoxResultCode ToNative(this ResultCode code)
         {
             return code switch
             {
@@ -170,6 +170,11 @@ namespace VoicevoxEngineSharp.Core.Enum
                 ResultCode.RESULT_INVALID_UUID_ERROR => VoicevoxResultCode.VOICEVOX_RESULT_INVALID_UUID_ERROR,
                 _ => throw new ArgumentOutOfRangeException(nameof(code), code, null),
             };
+        }
+
+        public static unsafe string ToMessage(this ResultCode code)
+        {
+            return StringConvertCompat.ToUTF8String(CoreUnsafe.voicevox_error_result_to_message(code.ToNative()));
         }
     }
 }
