@@ -38,7 +38,7 @@ namespace VoicevoxEngineSharp.Core
 
     public class UserDict
     {
-        private UserDictHandle Handle { get; set; }
+        internal UserDictHandle Handle { get; private set; }
 
         public UserDict()
         {
