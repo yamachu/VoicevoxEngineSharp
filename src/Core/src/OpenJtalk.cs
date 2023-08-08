@@ -53,7 +53,7 @@ namespace VoicevoxEngineSharp.Core
             }
         }
 
-        public ResultCode Import(UserDict userDict)
+        public ResultCode UseUserDict(UserDict userDict)
         {
             unsafe
             {

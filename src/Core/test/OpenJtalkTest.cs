@@ -23,7 +23,7 @@ namespace VoicevoxEngineSharp.Core.Test
             // 空っぽの辞書をコンパイルしようとするとクラッシュするので足す
             var userDict = new UserDict();
             userDict.AddWord(UserDictWord.Create("hoge", "ホゲ"), out var _);
-            var result = openJtalk.Import(userDict);
+            var result = openJtalk.UseUserDict(userDict);
             Assert.Equal(ResultCode.RESULT_OK, result);
         }
     }
