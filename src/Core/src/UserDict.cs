@@ -36,9 +36,10 @@ namespace VoicevoxEngineSharp.Core
         public static unsafe implicit operator VoicevoxUserDict*(UserDictHandle handle) => (VoicevoxUserDict*)handle.handle.ToPointer();
     }
 
-    public class UserDict
+    public class UserDict : IDisposable
     {
         internal UserDictHandle Handle { get; private set; }
+        private bool _disposed = false;
 
         public UserDict()
         {
@@ -133,6 +134,28 @@ namespace VoicevoxEngineSharp.Core
                 {
                     return CoreUnsafe.voicevox_user_dict_remove_word((VoicevoxUserDict*)Handle, ptr).FromNative();
                 }
+            }
+        }
+
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!_disposed)
+            {
+                if (disposing)
+                {
+                    if (Handle != null && !Handle.IsInvalid)
+                    {
+                        Handle.Dispose();
+                    }
+                }
+
+                _disposed = true;
             }
         }
     }

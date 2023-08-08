@@ -28,9 +28,10 @@ namespace VoicevoxEngineSharp.Core
         public static unsafe implicit operator OpenJtalkRc*(OpenJtalkRcHandle handle) => (OpenJtalkRc*)handle.handle.ToPointer();
     }
 
-    public class OpenJtalk
+    public class OpenJtalk : IDisposable
     {
         internal OpenJtalkRcHandle Handle { get; private set; }
+        private bool _disposed = false;
 
         private unsafe OpenJtalk(OpenJtalkRc* rcHandle)
         {
@@ -58,6 +59,28 @@ namespace VoicevoxEngineSharp.Core
             unsafe
             {
                 return CoreUnsafe.voicevox_open_jtalk_rc_use_user_dict((OpenJtalkRc*)Handle, (VoicevoxUserDict*)userDict.Handle).FromNative();
+            }
+        }
+
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!_disposed)
+            {
+                if (disposing)
+                {
+                    if (Handle != null && !Handle.IsInvalid)
+                    {
+                        Handle.Dispose();
+                    }
+                }
+
+                _disposed = true;
             }
         }
     }

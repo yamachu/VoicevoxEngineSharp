@@ -28,9 +28,10 @@ namespace VoicevoxEngineSharp.Core
         public static unsafe implicit operator VoicevoxSynthesizer*(SynthesizerHandle handle) => (VoicevoxSynthesizer*)handle.handle.ToPointer();
     }
 
-    public class Synthesizer
+    public class Synthesizer : IDisposable
     {
         internal SynthesizerHandle Handle { get; private set; }
+        private bool _disposed = false;
 
         private unsafe Synthesizer(VoicevoxSynthesizer* synthesizerHandle)
         {
@@ -258,6 +259,28 @@ namespace VoicevoxEngineSharp.Core
                     }
 
                 }
+            }
+        }
+
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!_disposed)
+            {
+                if (disposing)
+                {
+                    if (Handle != null && !Handle.IsInvalid)
+                    {
+                        Handle.Dispose();
+                    }
+                }
+
+                _disposed = true;
             }
         }
     }

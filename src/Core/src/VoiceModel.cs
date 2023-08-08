@@ -28,9 +28,10 @@ namespace VoicevoxEngineSharp.Core
         public static unsafe implicit operator VoicevoxVoiceModel*(VoiceModelHandle handle) => (VoicevoxVoiceModel*)handle.handle.ToPointer();
     }
 
-    public class VoiceModel
+    public class VoiceModel : IDisposable
     {
         internal VoiceModelHandle Handle { get; private set; }
+        private bool _disposed = false;
 
         private unsafe VoiceModel(VoicevoxVoiceModel* modelHandle)
         {
@@ -74,6 +75,28 @@ namespace VoicevoxEngineSharp.Core
                     var ptr = CoreUnsafe.voicevox_voice_model_get_metas_json((VoicevoxVoiceModel*)Handle);
                     return StringConvertCompat.ToUTF8String(ptr);
                 }
+            }
+        }
+
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!_disposed)
+            {
+                if (disposing)
+                {
+                    if (Handle != null && !Handle.IsInvalid)
+                    {
+                        Handle.Dispose();
+                    }
+                }
+
+                _disposed = true;
             }
         }
     }
