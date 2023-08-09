@@ -106,7 +106,7 @@ namespace VoicevoxEngineSharp.Core
             }
         }
 
-        public ResultCode CreateAudioQuery(string text, uint styleId, AudioQueryOptions options, out string audioQueryJson)
+        public ResultCode CreateAudioQuery(string text, uint styleId, AudioQueryOptions options, out string? audioQueryJson)
         {
             unsafe
             {
@@ -116,14 +116,22 @@ namespace VoicevoxEngineSharp.Core
                     byte* resultJsonPtr;
 
                     var result = CoreUnsafe.voicevox_synthesizer_audio_query((VoicevoxSynthesizer*)Handle, ptr, styleId, nativeOptions, &resultJsonPtr).FromNative();
-                    audioQueryJson = StringConvertCompat.ToUTF8String(resultJsonPtr);
+                    if (result == ResultCode.RESULT_OK)
+                    {
+                        audioQueryJson = StringConvertCompat.ToUTF8String(resultJsonPtr);
+                        CoreUnsafe.voicevox_json_free(resultJsonPtr);
+                    }
+                    else
+                    {
+                        audioQueryJson = null;
+                    }
 
                     return result;
                 }
             }
         }
 
-        public ResultCode CreateAccentPhrases(string text, uint styleId, AccentPhrasesOptions options, out string accentPhrasesJson)
+        public ResultCode CreateAccentPhrases(string text, uint styleId, AccentPhrasesOptions options, out string? accentPhrasesJson)
         {
             unsafe
             {
@@ -133,14 +141,22 @@ namespace VoicevoxEngineSharp.Core
                     byte* resultJsonPtr;
 
                     var result = CoreUnsafe.voicevox_synthesizer_create_accent_phrases((VoicevoxSynthesizer*)Handle, ptr, styleId, nativeOptions, &resultJsonPtr).FromNative();
-                    accentPhrasesJson = StringConvertCompat.ToUTF8String(resultJsonPtr);
+                    if (result == ResultCode.RESULT_OK)
+                    {
+                        accentPhrasesJson = StringConvertCompat.ToUTF8String(resultJsonPtr);
+                        CoreUnsafe.voicevox_json_free(resultJsonPtr);
+                    }
+                    else
+                    {
+                        accentPhrasesJson = null;
+                    }
 
                     return result;
                 }
             }
         }
 
-        public ResultCode ReplaceMoraData(string accentPhrasesJson, uint styleId, out string outputAccentPhrasesJson)
+        public ResultCode ReplaceMoraData(string accentPhrasesJson, uint styleId, out string? outputAccentPhrasesJson)
         {
             unsafe
             {
@@ -149,14 +165,22 @@ namespace VoicevoxEngineSharp.Core
                     byte* resultJsonPtr;
 
                     var result = CoreUnsafe.voicevox_synthesizer_replace_mora_data((VoicevoxSynthesizer*)Handle, ptr, styleId, &resultJsonPtr).FromNative();
-                    outputAccentPhrasesJson = StringConvertCompat.ToUTF8String(resultJsonPtr);
+                    if (result == ResultCode.RESULT_OK)
+                    {
+                        outputAccentPhrasesJson = StringConvertCompat.ToUTF8String(resultJsonPtr);
+                        CoreUnsafe.voicevox_json_free(resultJsonPtr);
+                    }
+                    else
+                    {
+                        outputAccentPhrasesJson = null;
+                    }
 
                     return result;
                 }
             }
         }
 
-        public ResultCode ReplacePhonemeLength(string accentPhrasesJson, uint styleId, out string outputAccentPhrasesJson)
+        public ResultCode ReplacePhonemeLength(string accentPhrasesJson, uint styleId, out string? outputAccentPhrasesJson)
         {
             unsafe
             {
@@ -165,14 +189,22 @@ namespace VoicevoxEngineSharp.Core
                     byte* resultJsonPtr;
 
                     var result = CoreUnsafe.voicevox_synthesizer_replace_phoneme_length((VoicevoxSynthesizer*)Handle, ptr, styleId, &resultJsonPtr).FromNative();
-                    outputAccentPhrasesJson = StringConvertCompat.ToUTF8String(resultJsonPtr);
+                    if (result == ResultCode.RESULT_OK)
+                    {
+                        outputAccentPhrasesJson = StringConvertCompat.ToUTF8String(resultJsonPtr);
+                        CoreUnsafe.voicevox_json_free(resultJsonPtr);
+                    }
+                    else
+                    {
+                        outputAccentPhrasesJson = null;
+                    }
 
                     return result;
                 }
             }
         }
 
-        public ResultCode ReplaceMoraPitch(string accentPhrasesJson, uint styleId, out string outputAccentPhrasesJson)
+        public ResultCode ReplaceMoraPitch(string accentPhrasesJson, uint styleId, out string? outputAccentPhrasesJson)
         {
             unsafe
             {
@@ -181,7 +213,15 @@ namespace VoicevoxEngineSharp.Core
                     byte* resultJsonPtr;
 
                     var result = CoreUnsafe.voicevox_synthesizer_replace_mora_pitch((VoicevoxSynthesizer*)Handle, ptr, styleId, &resultJsonPtr).FromNative();
-                    outputAccentPhrasesJson = StringConvertCompat.ToUTF8String(resultJsonPtr);
+                    if (result == ResultCode.RESULT_OK)
+                    {
+                        outputAccentPhrasesJson = StringConvertCompat.ToUTF8String(resultJsonPtr);
+                        CoreUnsafe.voicevox_json_free(resultJsonPtr);
+                    }
+                    else
+                    {
+                        outputAccentPhrasesJson = null;
+                    }
 
                     return result;
                 }
