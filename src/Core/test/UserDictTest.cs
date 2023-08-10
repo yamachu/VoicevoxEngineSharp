@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.IO;
 using VoicevoxEngineSharp.Core.Enum;
 using VoicevoxEngineSharp.Core.Struct;
@@ -12,7 +12,9 @@ namespace VoicevoxEngineSharp.Core.Test
         public void ToJSON()
         {
             var userDict = new UserDict();
+
             var result = userDict.ToJson(out var json);
+
             Assert.Equal(ResultCode.RESULT_OK, result);
             Assert.Equal("{}", json);
         }
@@ -21,14 +23,14 @@ namespace VoicevoxEngineSharp.Core.Test
         public void Save()
         {
             var userDict = new UserDict();
-            Assert.Equal(ResultCode.RESULT_OK, userDict.Save(Path.Combine(Directory.GetCurrentDirectory(), "user_dict.json")));
+            Assert.Equal(ResultCode.RESULT_OK, userDict.Save(Path.Combine(Helper.GetTestResultsDirectory(), $"{GetType().Name}_Save.json")));
         }
 
         [Fact]
         public void Load()
         {
             var userDict = new UserDict();
-            Assert.Equal(ResultCode.RESULT_OK, userDict.Load(Path.Combine(Directory.GetCurrentDirectory(), "user_dict.json")));
+            Assert.Equal(ResultCode.RESULT_OK, userDict.Load(Path.Combine(Helper.GetTestFixturesDirectory(), "hoge_user_dict.json")));
         }
 
         [Fact]

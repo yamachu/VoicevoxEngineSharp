@@ -1,5 +1,4 @@
-using System;
-using System.IO;
+﻿using System;
 using VoicevoxEngineSharp.Core.Enum;
 using VoicevoxEngineSharp.Core.Struct;
 using Xunit;
@@ -11,7 +10,8 @@ namespace VoicevoxEngineSharp.Core.Test
         [Fact]
         public void Open()
         {
-            var openResult = OpenJtalk.New(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "Downloads", "open_jtalk_dic_utf_8-1.11"), out var openJtalk);
+            var openResult = OpenJtalk.New(Consts.OpenJTalkDictDir, out var openJtalk);
+
             Assert.Equal(ResultCode.RESULT_OK, openResult);
             Assert.NotNull(openJtalk);
         }
@@ -19,11 +19,13 @@ namespace VoicevoxEngineSharp.Core.Test
         [Fact]
         public void UseUserDict()
         {
-            OpenJtalk.New(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "Downloads", "open_jtalk_dic_utf_8-1.11"), out var openJtalk);
+            OpenJtalk.New(Consts.OpenJTalkDictDir, out var openJtalk);
             // 空っぽの辞書をコンパイルしようとするとクラッシュするので足す
             var userDict = new UserDict();
             userDict.AddWord(UserDictWord.Create("hoge", "ホゲ"), out var _);
+
             var result = openJtalk.UseUserDict(userDict);
+
             Assert.Equal(ResultCode.RESULT_OK, result);
         }
     }
