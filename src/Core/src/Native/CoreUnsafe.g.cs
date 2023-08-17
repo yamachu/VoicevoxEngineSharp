@@ -27,6 +27,12 @@ namespace VoicevoxEngineSharp.Core.Native
         [DllImport(__DllName, EntryPoint = "voicevox_open_jtalk_rc_delete", CallingConvention = CallingConvention.Cdecl, ExactSpelling = true)]
         public static extern void voicevox_open_jtalk_rc_delete(OpenJtalkRc* open_jtalk);
 
+        [DllImport(__DllName, EntryPoint = "voicevox_make_default_initialize_options", CallingConvention = CallingConvention.Cdecl, ExactSpelling = true)]
+        public static extern VoicevoxInitializeOptions voicevox_make_default_initialize_options();
+
+        [DllImport(__DllName, EntryPoint = "voicevox_get_version", CallingConvention = CallingConvention.Cdecl, ExactSpelling = true)]
+        public static extern byte* voicevox_get_version();
+
         [DllImport(__DllName, EntryPoint = "voicevox_voice_model_new_from_path", CallingConvention = CallingConvention.Cdecl, ExactSpelling = true)]
         public static extern VoicevoxResultCode voicevox_voice_model_new_from_path(byte* path, VoicevoxVoiceModel** out_model);
 
@@ -65,8 +71,14 @@ namespace VoicevoxEngineSharp.Core.Native
         [DllImport(__DllName, EntryPoint = "voicevox_create_supported_devices_json", CallingConvention = CallingConvention.Cdecl, ExactSpelling = true)]
         public static extern VoicevoxResultCode voicevox_create_supported_devices_json(byte** output_supported_devices_json);
 
-        [DllImport(__DllName, EntryPoint = "voicevox_synthesizer_audio_query", CallingConvention = CallingConvention.Cdecl, ExactSpelling = true)]
-        public static extern VoicevoxResultCode voicevox_synthesizer_audio_query(VoicevoxSynthesizer* synthesizer, byte* text, uint style_id, VoicevoxAudioQueryOptions options, byte** output_audio_query_json);
+        [DllImport(__DllName, EntryPoint = "voicevox_make_default_audio_query_options", CallingConvention = CallingConvention.Cdecl, ExactSpelling = true)]
+        public static extern VoicevoxAudioQueryOptions voicevox_make_default_audio_query_options();
+
+        [DllImport(__DllName, EntryPoint = "voicevox_synthesizer_create_audio_query", CallingConvention = CallingConvention.Cdecl, ExactSpelling = true)]
+        public static extern VoicevoxResultCode voicevox_synthesizer_create_audio_query(VoicevoxSynthesizer* synthesizer, byte* text, uint style_id, VoicevoxAudioQueryOptions options, byte** output_audio_query_json);
+
+        [DllImport(__DllName, EntryPoint = "voicevox_make_default_accent_phrases_options", CallingConvention = CallingConvention.Cdecl, ExactSpelling = true)]
+        public static extern VoicevoxAccentPhrasesOptions voicevox_make_default_accent_phrases_options();
 
         [DllImport(__DllName, EntryPoint = "voicevox_synthesizer_create_accent_phrases", CallingConvention = CallingConvention.Cdecl, ExactSpelling = true)]
         public static extern VoicevoxResultCode voicevox_synthesizer_create_accent_phrases(VoicevoxSynthesizer* synthesizer, byte* text, uint style_id, VoicevoxAccentPhrasesOptions options, byte** output_accent_phrases_json);
@@ -80,8 +92,14 @@ namespace VoicevoxEngineSharp.Core.Native
         [DllImport(__DllName, EntryPoint = "voicevox_synthesizer_replace_mora_pitch", CallingConvention = CallingConvention.Cdecl, ExactSpelling = true)]
         public static extern VoicevoxResultCode voicevox_synthesizer_replace_mora_pitch(VoicevoxSynthesizer* synthesizer, byte* accent_phrases_json, uint style_id, byte** output_accent_phrases_json);
 
+        [DllImport(__DllName, EntryPoint = "voicevox_make_default_synthesis_options", CallingConvention = CallingConvention.Cdecl, ExactSpelling = true)]
+        public static extern VoicevoxSynthesisOptions voicevox_make_default_synthesis_options();
+
         [DllImport(__DllName, EntryPoint = "voicevox_synthesizer_synthesis", CallingConvention = CallingConvention.Cdecl, ExactSpelling = true)]
         public static extern VoicevoxResultCode voicevox_synthesizer_synthesis(VoicevoxSynthesizer* synthesizer, byte* audio_query_json, uint style_id, VoicevoxSynthesisOptions options, nuint* output_wav_length, byte** output_wav);
+
+        [DllImport(__DllName, EntryPoint = "voicevox_make_default_tts_options", CallingConvention = CallingConvention.Cdecl, ExactSpelling = true)]
+        public static extern VoicevoxTtsOptions voicevox_make_default_tts_options();
 
         [DllImport(__DllName, EntryPoint = "voicevox_synthesizer_tts", CallingConvention = CallingConvention.Cdecl, ExactSpelling = true)]
         public static extern VoicevoxResultCode voicevox_synthesizer_tts(VoicevoxSynthesizer* synthesizer, byte* text, uint style_id, VoicevoxTtsOptions options, nuint* output_wav_length, byte** output_wav);
@@ -210,15 +228,15 @@ namespace VoicevoxEngineSharp.Core.Native
         VOICEVOX_RESULT_PARSE_KANA_ERROR = 13,
         VOICEVOX_RESULT_INVALID_AUDIO_QUERY_ERROR = 14,
         VOICEVOX_RESULT_INVALID_ACCENT_PHRASE_ERROR = 15,
-        VOICEVOX_OPEN_FILE_ERROR = 16,
-        VOICEVOX_VVM_MODEL_READ_ERROR = 17,
-        VOICEVOX_ALREADY_LOADED_MODEL_ERROR = 18,
-        VOICEVOX_UNLOADED_MODEL_ERROR = 19,
-        VOICEVOX_LOAD_USER_DICT_ERROR = 20,
-        VOICEVOX_SAVE_USER_DICT_ERROR = 21,
-        VOICEVOX_UNKNOWN_USER_DICT_WORD_ERROR = 22,
-        VOICEVOX_USE_USER_DICT_ERROR = 23,
-        VOICEVOX_INVALID_USER_DICT_WORD_ERROR = 24,
+        VOICEVOX_RESULT_OPEN_FILE_ERROR = 16,
+        VOICEVOX_RESULT_VVM_MODEL_READ_ERROR = 17,
+        VOICEVOX_RESULT_ALREADY_LOADED_MODEL_ERROR = 18,
+        VOICEVOX_RESULT_UNLOADED_MODEL_ERROR = 19,
+        VOICEVOX_RESULT_LOAD_USER_DICT_ERROR = 20,
+        VOICEVOX_RESULT_SAVE_USER_DICT_ERROR = 21,
+        VOICEVOX_RESULT_UNKNOWN_USER_DICT_WORD_ERROR = 22,
+        VOICEVOX_RESULT_USE_USER_DICT_ERROR = 23,
+        VOICEVOX_RESULT_INVALID_USER_DICT_WORD_ERROR = 24,
         VOICEVOX_RESULT_INVALID_UUID_ERROR = 25,
     }
 
