@@ -9,7 +9,7 @@ namespace VoicevoxEngineSharp.Core.Test
         [Fact]
         public void ToMessage()
         {
-            Assert.NotEmpty(ResultCode.ALREADY_LOADED_MODEL_ERROR.ToMessage());
+            Assert.NotEmpty(ResultCode.RESULT_ALREADY_LOADED_MODEL_ERROR.ToMessage());
         }
     }
 }
