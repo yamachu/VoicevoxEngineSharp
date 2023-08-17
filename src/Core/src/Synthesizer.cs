@@ -115,7 +115,7 @@ namespace VoicevoxEngineSharp.Core
                     var nativeOptions = options.ToNative();
                     byte* resultJsonPtr;
 
-                    var result = CoreUnsafe.voicevox_synthesizer_audio_query((VoicevoxSynthesizer*)Handle, ptr, styleId, nativeOptions, &resultJsonPtr).FromNative();
+                    var result = CoreUnsafe.voicevox_synthesizer_create_audio_query((VoicevoxSynthesizer*)Handle, ptr, styleId, nativeOptions, &resultJsonPtr).FromNative();
                     if (result == ResultCode.RESULT_OK)
                     {
                         audioQueryJson = StringConvertCompat.ToUTF8String(resultJsonPtr);
