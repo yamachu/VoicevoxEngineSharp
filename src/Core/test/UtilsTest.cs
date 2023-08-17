@@ -13,5 +13,12 @@ namespace VoicevoxEngineSharp.Core.Test
             Assert.Equal(ResultCode.RESULT_OK, result);
             Assert.NotNull(supportedDevicesJson);
         }
+
+        [Fact]
+        public void GetVersion()
+        {
+            var version = Utils.GetVersion();
+            Assert.NotNull(version);
+        }
     }
 }

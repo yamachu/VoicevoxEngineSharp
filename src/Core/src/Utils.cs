@@ -27,5 +27,13 @@ namespace VoicevoxEngineSharp.Core
                 return result.FromNative();
             }
         }
+
+        public static string GetVersion()
+        {
+            unsafe
+            {
+                return StringConvertCompat.ToUTF8String(CoreUnsafe.voicevox_get_version());
+            }
+        }
     }
 }
