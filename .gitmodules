@@ -1,0 +1,3 @@
+[submodule "src/Core/binding/voicevox_core"]
+	path = src/Core/binding/voicevox_core
+	url = git@github.com:VOICEVOX/voicevox_core.git

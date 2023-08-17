@@ -1,0 +1,12 @@
+<Project>
+  <Target Name="RenameOnnxRuntimeForVoicevoxCore" AfterTargets="Build">
+    <Copy SourceFiles="$(OutputPath)runtimes/osx.10.14-x64/native/libonnxruntime.dylib" DestinationFiles="$(OutputPath)runtimes/osx.10.14-x64/native/libonnxruntime.$(VoicevoxOnnxRuntimeVersion).dylib" />
+    <Copy SourceFiles="$(OutputPath)runtimes/osx.10.14-arm64/native/libonnxruntime.dylib" DestinationFiles="$(OutputPath)runtimes/osx.10.14-arm64/native/libonnxruntime.$(VoicevoxOnnxRuntimeVersion).dylib" />
+    <Copy SourceFiles="$(OutputPath)runtimes/linux-arm64/native/libonnxruntime.so" DestinationFiles="$(OutputPath)runtimes/linux-arm64/native/libonnxruntime.$(VoicevoxOnnxRuntimeVersion).so" />
+    <Copy SourceFiles="$(OutputPath)runtimes/linux-x64/native/libonnxruntime.so" DestinationFiles="$(OutputPath)runtimes/linux-x64/native/libonnxruntime.$(VoicevoxOnnxRuntimeVersion).so" />
+    <Copy SourceFiles="$(OutputPath)runtimes/win-arm64/native/onnxruntime.dll" DestinationFiles="$(OutputPath)runtimes/win-arm64/native/onnxruntime.$(VoicevoxOnnxRuntimeVersion).dll" />
+    <Copy SourceFiles="$(OutputPath)runtimes/win-arm/native/onnxruntime.dll" DestinationFiles="$(OutputPath)runtimes/win-arm/native/onnxruntime.$(VoicevoxOnnxRuntimeVersion).dll" />
+    <Copy SourceFiles="$(OutputPath)runtimes/win-x64/native/onnxruntime.dll" DestinationFiles="$(OutputPath)runtimes/win-x64/native/onnxruntime.$(VoicevoxOnnxRuntimeVersion).dll" />
+    <Copy SourceFiles="$(OutputPath)runtimes/win-x86/native/onnxruntime.dll" DestinationFiles="$(OutputPath)runtimes/win-x86/native/onnxruntime.$(VoicevoxOnnxRuntimeVersion).dll" />
+  </Target>
+</Project>

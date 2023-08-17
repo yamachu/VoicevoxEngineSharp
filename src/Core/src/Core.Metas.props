@@ -1,0 +1,5 @@
+<Project>
+    <PropertyGroup>
+        <VoicevoxOnnxRuntimeVersion>1.14.0</VoicevoxOnnxRuntimeVersion>
+    </PropertyGroup>
+</Project>
