@@ -24,4 +24,7 @@
     <Compile Remove="MoraExtensionTest.cs;PhonemeTest.cs" />
   </ItemGroup>
 
+  <Import Project="..\src\Core.Metas.props" />
+  <Import Project="..\src\Core.Metas.targets" />
+
 </Project>

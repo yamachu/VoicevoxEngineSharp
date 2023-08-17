@@ -1,7 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <!-- <TargetFramework>net6.0</TargetFramework> -->
     <TargetFramework>netstandard2.0</TargetFramework>
     <Nullable>enable</Nullable>
     <AssemblyName>VoicevoxEngineSharp.Core</AssemblyName>
@@ -9,9 +8,10 @@
     <LangVersion>9.0</LangVersion>
   </PropertyGroup>
 
+  <Import Project="Core.Metas.props" />
+
   <ItemGroup>
-    <PackageReference Include="NumSharp" Version="0.30.0" />
-    <PackageReference Include="SharpOpenJTalk.Lang" Version="1.2.0" />
+    <PackageReference Include="Microsoft.ML.OnnxRuntime" Version="$(VoicevoxOnnxRuntimeVersion)" />
   </ItemGroup>
 
   <ItemGroup>
