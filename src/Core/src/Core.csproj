@@ -15,7 +15,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Include="$(ProjectDir)\..\resources\**" Exclude="$(ProjectDir)\..\resources\.gitkeep" CopyToOutputDirectory="PreserveNewest" Visible="false" />
     <Compile Remove="Acoustic\**\*.cs;Language\**\*.cs;Usecases\**\*.cs" />
   </ItemGroup>
 
