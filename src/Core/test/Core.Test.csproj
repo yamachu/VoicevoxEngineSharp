@@ -21,7 +21,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\src\Core.csproj" />
-    <Compile Remove="MoraExtensionTest.cs;PhonemeTest.cs" />
   </ItemGroup>
 
   <Import Project="..\src\Core.Metas.props" />

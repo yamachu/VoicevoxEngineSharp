@@ -14,8 +14,4 @@
     <PackageReference Include="Microsoft.ML.OnnxRuntime" Version="$(VoicevoxOnnxRuntimeVersion)" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Compile Remove="Acoustic\**\*.cs;Language\**\*.cs;Usecases\**\*.cs" />
-  </ItemGroup>
-
 </Project>
