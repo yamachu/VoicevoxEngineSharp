@@ -22,6 +22,16 @@ namespace VoicevoxEngineSharp.Core.Struct
         /// 全てのモデルを読み込む
         /// </summary>
         public bool LoadAllModels { get; set; }
+
+        public static InitializeOptions Default()
+        {
+            return InitializeOptionsDefault.Value;
+        }
+    }
+
+    internal static class InitializeOptionsDefault
+    {
+        public static readonly InitializeOptions Value = CoreUnsafe.voicevox_make_default_initialize_options().FromNative();
     }
 
     internal static class InitializeOptionsExt
@@ -33,6 +43,16 @@ namespace VoicevoxEngineSharp.Core.Struct
                 acceleration_mode = initializeOptions.AccelerationMode.ToNative(),
                 cpu_num_threads = initializeOptions.CpuNumThreads,
                 load_all_models = initializeOptions.LoadAllModels
+            };
+        }
+
+        internal static InitializeOptions FromNative(this VoicevoxInitializeOptions initializeOptions)
+        {
+            return new InitializeOptions
+            {
+                AccelerationMode = initializeOptions.acceleration_mode.FromNative(),
+                CpuNumThreads = initializeOptions.cpu_num_threads,
+                LoadAllModels = initializeOptions.load_all_models
             };
         }
     }

@@ -16,6 +16,16 @@ namespace VoicevoxEngineSharp.Core.Struct
         /// 疑問文の調整を有効にする
         /// </summary>
         public bool EnableInterrogativeUpspeak { get; set; }
+
+        public static TtsOptions Default()
+        {
+            return TtsOptionsDefault.Value;
+        }
+    }
+
+    internal static class TtsOptionsDefault
+    {
+        public static readonly TtsOptions Value = CoreUnsafe.voicevox_make_default_tts_options().FromNative();
     }
 
     internal static class TtsOptionsExt
@@ -26,6 +36,15 @@ namespace VoicevoxEngineSharp.Core.Struct
             {
                 kana = ttsOptions.Kana,
                 enable_interrogative_upspeak = ttsOptions.EnableInterrogativeUpspeak
+            };
+        }
+
+        internal static TtsOptions FromNative(this VoicevoxTtsOptions ttsOptions)
+        {
+            return new TtsOptions
+            {
+                Kana = ttsOptions.kana,
+                EnableInterrogativeUpspeak = ttsOptions.enable_interrogative_upspeak
             };
         }
     }

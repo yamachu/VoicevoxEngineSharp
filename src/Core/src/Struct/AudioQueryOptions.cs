@@ -12,6 +12,16 @@ namespace VoicevoxEngineSharp.Core.Struct
         /// AquesTalk風記法としてテキストを解釈する
         /// </summary>
         public bool Kana { get; set; }
+
+        public static AudioQueryOptions Default()
+        {
+            return AudioQueryOptionsDefault.Value;
+        }
+    }
+
+    internal static class AudioQueryOptionsDefault
+    {
+        public static readonly AudioQueryOptions Value = CoreUnsafe.voicevox_make_default_audio_query_options().FromNative();
     }
 
     internal static class AudioQueryOptionsExt
@@ -21,6 +31,14 @@ namespace VoicevoxEngineSharp.Core.Struct
             return new VoicevoxAudioQueryOptions
             {
                 kana = audioQueryOptions.Kana
+            };
+        }
+
+        internal static AudioQueryOptions FromNative(this VoicevoxAudioQueryOptions audioQueryOptions)
+        {
+            return new AudioQueryOptions
+            {
+                Kana = audioQueryOptions.kana
             };
         }
     }
