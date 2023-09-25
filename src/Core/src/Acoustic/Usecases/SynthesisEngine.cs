@@ -40,7 +40,46 @@ namespace VoicevoxEngineSharp.Core.Acoustic.Usecases
             DecodeForward = decodeForwardImpl;
         }
 
-        internal IEnumerable<AccentPhrase> ReplaceMoraData(IEnumerable<AccentPhrase> accentPhrases, int speakerId)
+        internal IEnumerable<AccentPhrase> ReplacePhonemeLength(IEnumerable<AccentPhrase> accentPhrases, int speakerId)
+        {
+            // NOTE: こいつに対して破壊的操作をするっぽい
+            var flattenMoras = accentPhrases.ToFlattenMoras();
+
+            var phonemeStrList = Enumerable.Concat(
+                new[] { "pau" },
+                flattenMoras.SelectMany(mora => mora.Consonant == null ? new[] { mora.Vowel } : new[] { mora.Consonant, mora.Vowel }))
+                .Concat(new[] { "pau" });
+
+            var phonemeDataList = phonemeStrList.ToOjtPhonemeDataList();
+
+            var (_, _, vowelIndexesData) = phonemeDataList.SplitMora();
+
+            var phonemeListS = phonemeDataList.Select(p => (long)p.PhonemeId).ToArray();
+            var phonemeLength = YukarinSForward(phonemeListS.Length, phonemeListS, new long[] { speakerId });
+
+            foreach (var (mora, i) in flattenMoras.Select((p, i) => (p, i)))
+            {
+                mora.ConsonantLength = mora.Consonant == null ? null : phonemeLength[vowelIndexesData[i + 1] - 1];
+                mora.VowelLength = phonemeLength[vowelIndexesData[i + 1]];
+            }
+
+            var ind = 0;
+            var gen = accentPhrases.Select(v =>
+            {
+                var ac = new AccentPhrase
+                {
+                    Accent = v.Accent,
+                    PauseMora = v.PauseMora,
+                    Moras = flattenMoras.Skip(ind).Take(v.Moras.Count()).ToArray()
+                };
+                ind += v.Moras.Count() + (v.PauseMora == null ? 0 : 1);
+                return ac;
+            }).ToArray();
+
+            return gen;
+        }
+
+        internal IEnumerable<AccentPhrase> ReplaceMoraPitch(IEnumerable<AccentPhrase> accentPhrases, int speakerId)
         {
             // NOTE: こいつに対して破壊的操作をするっぽい
             var flattenMoras = accentPhrases.ToFlattenMoras();
@@ -110,9 +149,6 @@ namespace VoicevoxEngineSharp.Core.Acoustic.Usecases
 
             var (consonantPhonemeDataList, vowelPhonemeDataList, vowelIndexesData) = phonemeDataList.SplitMora();
 
-            var phonemeListS = phonemeDataList.Select(p => (long)p.PhonemeId).ToArray();
-            var phonemeLength = YukarinSForward(phonemeListS.Length, phonemeListS, new long[] { speakerId });
-
             var vowelIndexes = np.array(vowelIndexesData, dtype: typeof(long));
             var vowelPhonemeList = np.array(vowelPhonemeDataList.Select(p => p.PhonemeId).ToArray(), dtype: typeof(long));
             var consonantPhonemeList = np.array(consonantPhonemeDataList.Select(p => p == null ? -1 : p.PhonemeId).ToArray(), dtype: typeof(long));
@@ -139,8 +175,6 @@ namespace VoicevoxEngineSharp.Core.Acoustic.Usecases
             foreach (var (mora, i) in flattenMoras.Select((p, i) => (p, i)))
             {
                 mora.Pitch = f0List[i + 1];
-                mora.ConsonantLength = mora.Consonant == null ? null : phonemeLength[vowelIndexesData[i + 1] - 1];
-                mora.VowelLength = phonemeLength[vowelIndexesData[i + 1]];
             }
 
             var ind = 0;
