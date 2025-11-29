@@ -59,6 +59,7 @@ namespace VoicevoxEngineSharp.Core.Language.Models
         }
 
         public bool IsPose => _contexts["f1"] == "xx";
+        public bool IsInterrogative => _contexts["f3"] == "1";
 
         public string GetPhoneme() => _contexts["p3"];
 
