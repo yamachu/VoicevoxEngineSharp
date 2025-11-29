@@ -2,7 +2,7 @@
 
 namespace VoicevoxEngineSharp.Core.Acoustic.Native
 {
-    internal interface IAcousticDNNLibrary
+    public interface IAcousticDNNLibrary
     {
         static bool Initialize(string root_dir_path, bool use_gpu)
             => throw new NotImplementedException();
