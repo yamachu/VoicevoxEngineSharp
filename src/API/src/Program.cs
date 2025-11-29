@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Threading.Tasks;
 using CommandLine;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
@@ -70,10 +71,25 @@ builder.Services.AddSingleton((_) =>
     {
         throw new ArgumentException("Failed to initialize library, verify passed arguments");
     }
+
+    // Wrap synchronous native functions with Task.FromResult for async compatibility
+    Func<int, long[], long[], Task<float[]>> yukarinSForwardAsync =
+        (length, phonemeList, speakerId) =>
+            Task.FromResult(VoicevoxEngineSharp.Core.Native.Acoustic.Native.Core.YukarinSForward(length, phonemeList, speakerId));
+
+    Func<int, long[], long[], long[], long[], long[], long[], long[], Task<float[]>> yukarinSaForwardAsync =
+        (length, vowelPhonemeList, consonantPhonemeList, startAccentList, endAccentList, startAccentPhraseList, endAccentPhraseList, speakerId) =>
+            Task.FromResult(VoicevoxEngineSharp.Core.Native.Acoustic.Native.Core.YukarinSaForward(
+                length, vowelPhonemeList, consonantPhonemeList, startAccentList, endAccentList, startAccentPhraseList, endAccentPhraseList, speakerId));
+
+    Func<int, int, float[], float[], long[], Task<float[]>> decodeForwardAsync =
+        (length, phonemeSize, f0, phoneme, speakerId) =>
+            Task.FromResult(VoicevoxEngineSharp.Core.Native.Acoustic.Native.Core.DecodeForward(length, phonemeSize, f0, phoneme, speakerId));
+
     return new SynthesisEngine(
-        VoicevoxEngineSharp.Core.Native.Acoustic.Native.Core.YukarinSForward,
-        VoicevoxEngineSharp.Core.Native.Acoustic.Native.Core.YukarinSaForward,
-        VoicevoxEngineSharp.Core.Native.Acoustic.Native.Core.DecodeForward
+        yukarinSForwardAsync,
+        yukarinSaForwardAsync,
+        decodeForwardAsync
     );
 });
 builder.Services.AddSingleton<Synthesis>();
@@ -97,9 +113,9 @@ app.UseCors("MyPolicy");
 app.UseSwagger();
 app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "voicevox_engine_sharp v1"));
 
-app.MapPost("/audio_query", (int speaker, string text, Synthesis synthesisService) =>
+app.MapPost("/audio_query", async (int speaker, string text, Synthesis synthesisService) =>
 {
-    var accentPhrases = synthesisService.CreateAccentPhrases(text, speaker);
+    var accentPhrases = await synthesisService.CreateAccentPhrases(text, speaker);
 
     return new AudioQuery
     {
@@ -119,7 +135,7 @@ app.MapPost("/audio_query", (int speaker, string text, Synthesis synthesisServic
 
 app.MapPost("/accent_phrases", async (int speaker, string text, Synthesis synthesisService) =>
 {
-    var accentPhrases = synthesisService.CreateAccentPhrases(text, speaker);
+    var accentPhrases = await synthesisService.CreateAccentPhrases(text, speaker);
 
     return accentPhrases.Select(v => AccentPhrase.FromDomain(v));
 });
@@ -133,7 +149,7 @@ app.MapPost("/mora_data", async (int speaker, Synthesis synthesisService, HttpCo
     }
 
     var request = await context.Request.ReadFromJsonAsync<IEnumerable<AccentPhrase>>();
-    var accentPhrases = synthesisService.ReplaceMoraData(request.Select(v => AccentPhrase.ToDomain(v)), speaker);
+    var accentPhrases = await synthesisService.ReplaceMoraData(request.Select(v => AccentPhrase.ToDomain(v)), speaker);
 
     return accentPhrases.Select(v => AccentPhrase.FromDomain(v));
 });
@@ -147,7 +163,7 @@ app.MapPost("/mora_length", async (int speaker, Synthesis synthesisService, Http
     }
 
     var request = await context.Request.ReadFromJsonAsync<IEnumerable<AccentPhrase>>();
-    var accentPhrases = synthesisService.ReplaceMoraLength(request.Select(v => AccentPhrase.ToDomain(v)), speaker);
+    var accentPhrases = await synthesisService.ReplaceMoraLength(request.Select(v => AccentPhrase.ToDomain(v)), speaker);
 
     return accentPhrases.Select(v => AccentPhrase.FromDomain(v));
 });
@@ -161,7 +177,7 @@ app.MapPost("/mora_pitch", async (int speaker, Synthesis synthesisService, HttpC
     }
 
     var request = await context.Request.ReadFromJsonAsync<IEnumerable<AccentPhrase>>();
-    var accentPhrases = synthesisService.ReplaceMoraPitch(request.Select(v => AccentPhrase.ToDomain(v)), speaker);
+    var accentPhrases = await synthesisService.ReplaceMoraPitch(request.Select(v => AccentPhrase.ToDomain(v)), speaker);
 
     return accentPhrases.Select(v => AccentPhrase.FromDomain(v));
 });
@@ -174,7 +190,7 @@ app.MapPost("/synthesis", async (int speaker, Synthesis synthesisService, AudioQ
         throw new BadHttpRequestException("unsupporterd media type", StatusCodes.Status415UnsupportedMediaType);
     }
 
-    var wave = synthesisService.SynthesisWave(new VoicevoxEngineSharp.Core.Acoustic.Models.AudioQuery
+    var wave = (await synthesisService.SynthesisWave(new VoicevoxEngineSharp.Core.Acoustic.Models.AudioQuery
     {
         AccentPhrases = request.AccentPhrases.Select(v => AccentPhrase.ToDomain(v)),
         SpeedScale = request.SpeedScale,
@@ -187,7 +203,7 @@ app.MapPost("/synthesis", async (int speaker, Synthesis synthesisService, AudioQ
         PauseLengthScale = request.PauseLengthScale,
         OutputSamplingRate = request.OutputSamplingRate,
         OutputStereo = request.OutputStereo,
-    }, speaker).ToArray();
+    }, speaker)).ToArray();
 
     var stream = new MemoryStream();
     // NOTE: 面倒なのでサンプリングレートは固定している

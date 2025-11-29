@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using NumSharp;
 using NumSharp.Generic;
 using VoicevoxEngineSharp.Core.Acoustic.Models;
@@ -9,14 +10,14 @@ namespace VoicevoxEngineSharp.Core.Acoustic.Usecases
 {
     public class SynthesisEngine
     {
-        Func<int, long[], long[], float[]> YukarinSForward;
-        Func<int, long[], long[], long[], long[], long[], long[], long[], float[]> YukarinSaForward;
-        Func<int, int, float[], float[], long[], float[]> DecodeForward;
+        Func<int, long[], long[], Task<float[]>> YukarinSForward;
+        Func<int, long[], long[], long[], long[], long[], long[], long[], Task<float[]>> YukarinSaForward;
+        Func<int, int, float[], float[], long[], Task<float[]>> DecodeForward;
 
         public SynthesisEngine(
-            Func<int, long[], long[], float[]> yukarinSForwardImpl,
-            Func<int, long[], long[], long[], long[], long[], long[], long[], float[]> yukarinSaForwardImpl,
-            Func<int, int, float[], float[], long[], float[]> decodeForwardImpl
+            Func<int, long[], long[], Task<float[]>> yukarinSForwardImpl,
+            Func<int, long[], long[], long[], long[], long[], long[], long[], Task<float[]>> yukarinSaForwardImpl,
+            Func<int, int, float[], float[], long[], Task<float[]>> decodeForwardImpl
         )
         {
             YukarinSForward = yukarinSForwardImpl;
@@ -24,7 +25,7 @@ namespace VoicevoxEngineSharp.Core.Acoustic.Usecases
             DecodeForward = decodeForwardImpl;
         }
 
-        internal IEnumerable<AccentPhrase> ReplacePhonemeLength(IEnumerable<AccentPhrase> accentPhrases, int speakerId)
+        internal async Task<IEnumerable<AccentPhrase>> ReplacePhonemeLength(IEnumerable<AccentPhrase> accentPhrases, int speakerId)
         {
             // NOTE: こいつに対して破壊的操作をするっぽい
             var flattenMoras = accentPhrases.ToFlattenMoras();
@@ -39,7 +40,7 @@ namespace VoicevoxEngineSharp.Core.Acoustic.Usecases
             var (_, _, vowelIndexesData) = phonemeDataList.SplitMora();
 
             var phonemeListS = phonemeDataList.Select(p => (long)p.PhonemeId).ToArray();
-            var phonemeLength = YukarinSForward(phonemeListS.Length, phonemeListS, new long[] { speakerId });
+            var phonemeLength = await YukarinSForward(phonemeListS.Length, phonemeListS, new long[] { speakerId });
 
             foreach (var (mora, i) in flattenMoras.Select((p, i) => (p, i)))
             {
@@ -64,7 +65,7 @@ namespace VoicevoxEngineSharp.Core.Acoustic.Usecases
             return gen;
         }
 
-        internal IEnumerable<AccentPhrase> ReplaceMoraPitch(IEnumerable<AccentPhrase> accentPhrases, int speakerId)
+        internal async Task<IEnumerable<AccentPhrase>> ReplaceMoraPitch(IEnumerable<AccentPhrase> accentPhrases, int speakerId)
         {
             // NOTE: こいつに対して破壊的操作をするっぽい
             var flattenMoras = accentPhrases.ToFlattenMoras();
@@ -138,7 +139,7 @@ namespace VoicevoxEngineSharp.Core.Acoustic.Usecases
             var vowelPhonemeList = np.array(vowelPhonemeDataList.Select(p => p.PhonemeId).ToArray(), dtype: typeof(long));
             var consonantPhonemeList = np.array(consonantPhonemeDataList.Select(p => p == null ? -1 : p.PhonemeId).ToArray(), dtype: typeof(long));
 
-            var f0List = YukarinSaForward(
+            var f0List = await YukarinSaForward(
                 vowelPhonemeList.shape[0],
                 vowelPhonemeList[np.newaxis].ToArray<long>(),
                 consonantPhonemeList[np.newaxis].ToArray<long>(),
@@ -179,7 +180,7 @@ namespace VoicevoxEngineSharp.Core.Acoustic.Usecases
             return gen;
         }
 
-        internal IEnumerable<float> Synthesis(AudioQuery audioQuery, int speakerId)
+        internal async Task<IEnumerable<float>> Synthesis(AudioQuery audioQuery, int speakerId)
         {
             const int rate = 200;
 
@@ -246,7 +247,7 @@ namespace VoicevoxEngineSharp.Core.Acoustic.Usecases
             var dPhoneme = samplePhoneme.ToArray<float>();
             var dSpeakerId = new long[] { speakerId };
 
-            var wave = DecodeForward(
+            var wave = await DecodeForward(
                 dLength,
                 dPhonemeSize,
                 dF0Float,
