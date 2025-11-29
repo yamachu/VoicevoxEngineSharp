@@ -95,7 +95,9 @@ app.MapPost("/audio_query", (int speaker, string text, Synthesis synthesisServic
         VolumeScale = 1,
         PrePhonemeLength = 0.1f,
         PostPhonemeLength = 0.1f,
-        OutputSamlingRate = 24000,
+        OutputSamplingRate = 24000,
+        PauseLength = null,
+        PauseLengthScale = 1.0f,
         OutputStereo = false,
     };
 });
@@ -166,11 +168,14 @@ app.MapPost("/synthesis", async (int speaker, Synthesis synthesisService, AudioQ
         VolumeScale = request.VolumeScale,
         PrePhonemeLength = request.PrePhonemeLength,
         PostPhonemeLength = request.PostPhonemeLength,
-        OutputSamlingRate = request.OutputSamlingRate,
+        PauseLength = request.PauseLength,
+        PauseLengthScale = request.PauseLengthScale,
+        OutputSamplingRate = request.OutputSamplingRate,
         OutputStereo = request.OutputStereo,
     }, speaker).ToArray();
 
     var stream = new MemoryStream();
+    // NOTE: 面倒なのでサンプリングレートは固定している
     var writerStream = new WaveFileWriter(stream, WaveFormat.CreateIeeeFloatWaveFormat(24000, 1));
     writerStream.WriteSamples(wave, 0, wave.Length);
     stream.Seek(0, SeekOrigin.Begin);
@@ -187,6 +192,7 @@ app.MapGet("/version", async () =>
 app.MapGet("/speakers", async (context) =>
 {
     // TODO: Use Results.Text(speakers, "application/json")
+    // TODO: FROM metas
     var speakers = System.IO.File.ReadAllTextAsync("speakers.json", encoding: System.Text.Encoding.UTF8);
     await context.Response.WriteAsJsonAsync(speakers);
     return;

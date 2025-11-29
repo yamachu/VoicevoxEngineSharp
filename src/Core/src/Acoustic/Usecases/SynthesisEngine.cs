@@ -70,7 +70,8 @@ namespace VoicevoxEngineSharp.Core.Acoustic.Usecases
                 {
                     Accent = v.Accent,
                     PauseMora = v.PauseMora,
-                    Moras = flattenMoras.Skip(ind).Take(v.Moras.Count()).ToArray()
+                    Moras = flattenMoras.Skip(ind).Take(v.Moras.Count()).ToArray(),
+                    IsInterrogative = v.IsInterrogative,
                 };
                 ind += v.Moras.Count() + (v.PauseMora == null ? 0 : 1);
                 return ac;
@@ -184,7 +185,8 @@ namespace VoicevoxEngineSharp.Core.Acoustic.Usecases
                 {
                     Accent = v.Accent,
                     PauseMora = v.PauseMora,
-                    Moras = flattenMoras.Skip(ind).Take(v.Moras.Count()).ToArray()
+                    Moras = flattenMoras.Skip(ind).Take(v.Moras.Count()).ToArray(),
+                    IsInterrogative = v.IsInterrogative,
                 };
                 ind += v.Moras.Count() + (v.PauseMora == null ? 0 : 1);
                 return ac;

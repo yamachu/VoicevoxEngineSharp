@@ -72,6 +72,7 @@ namespace VoicevoxEngineSharp.Core.Usecases
                                 Pitch = 0
                             }
                             : null,
+                        IsInterrogative = accentPhrase.Moras.Last().Vowel.IsInterrogative,
                     };
                 });
             });

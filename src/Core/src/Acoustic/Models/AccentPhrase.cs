@@ -12,6 +12,7 @@ namespace VoicevoxEngineSharp.Core.Acoustic.Models
 #nullable enable
         public Mora? PauseMora { get; init; }
 #nullable disable
+        public bool IsInterrogative { get; init; }
     }
 
     internal static class AccentPhraseExtension
