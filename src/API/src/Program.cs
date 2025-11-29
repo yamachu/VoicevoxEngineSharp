@@ -116,7 +116,7 @@ app.MapPost("/mora_data", async (int speaker, Synthesis synthesisService, HttpCo
     }
 
     var request = await context.Request.ReadFromJsonAsync<IEnumerable<AccentPhrase>>();
-    var accentPhrases = synthesisService.ReplaceMoraPitch(request.Select(v => AccentPhrase.ToDomain(v)), speaker);
+    var accentPhrases = synthesisService.ReplaceMoraData(request.Select(v => AccentPhrase.ToDomain(v)), speaker);
 
     return accentPhrases.Select(v => AccentPhrase.FromDomain(v));
 });
