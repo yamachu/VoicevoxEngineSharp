@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using VoicevoxEngineSharp.Core.Acoustic.Models;
 using VoicevoxEngineSharp.Core.Acoustic.Usecases;
 using VoicevoxEngineSharp.Core.Language.Extensions;
@@ -18,25 +19,25 @@ namespace VoicevoxEngineSharp.Core.Usecases
             _synthesisEngine = synthesisEngine;
         }
 
-        public IEnumerable<AccentPhrase> ReplaceMoraData(IEnumerable<AccentPhrase> accentPhrases, int speakerId)
+        public async Task<IEnumerable<AccentPhrase>> ReplaceMoraData(IEnumerable<AccentPhrase> accentPhrases, int speakerId)
         {
-            return _synthesisEngine.ReplaceMoraPitch(
-                _synthesisEngine.ReplacePhonemeLength(accentPhrases, speakerId),
+            return await _synthesisEngine.ReplaceMoraPitch(
+                await _synthesisEngine.ReplacePhonemeLength(accentPhrases, speakerId),
                 speakerId
             );
         }
 
-        public IEnumerable<AccentPhrase> ReplaceMoraLength(IEnumerable<AccentPhrase> accentPhrases, int speakerId)
+        public async Task<IEnumerable<AccentPhrase>> ReplaceMoraLength(IEnumerable<AccentPhrase> accentPhrases, int speakerId)
         {
-            return _synthesisEngine.ReplacePhonemeLength(accentPhrases, speakerId);
+            return await _synthesisEngine.ReplacePhonemeLength(accentPhrases, speakerId);
         }
 
-        public IEnumerable<AccentPhrase> ReplaceMoraPitch(IEnumerable<AccentPhrase> accentPhrases, int speakerId)
+        public async Task<IEnumerable<AccentPhrase>> ReplaceMoraPitch(IEnumerable<AccentPhrase> accentPhrases, int speakerId)
         {
-            return _synthesisEngine.ReplaceMoraPitch(accentPhrases, speakerId);
+            return await _synthesisEngine.ReplaceMoraPitch(accentPhrases, speakerId);
         }
 
-        public IEnumerable<AccentPhrase> CreateAccentPhrases(string text, int speakerId)
+        public async Task<IEnumerable<AccentPhrase>> CreateAccentPhrases(string text, int speakerId)
         {
             if (text.Trim() == "")
             {
@@ -77,12 +78,12 @@ namespace VoicevoxEngineSharp.Core.Usecases
                 });
             });
 
-            return ReplaceMoraData(accentPhrases, speakerId);
+            return await ReplaceMoraData(accentPhrases, speakerId);
         }
 
-        public IEnumerable<float> SynthesisWave(AudioQuery audioQuery, int speakerId)
+        public async Task<IEnumerable<float>> SynthesisWave(AudioQuery audioQuery, int speakerId)
         {
-            return _synthesisEngine.Synthesis(audioQuery, speakerId);
+            return await _synthesisEngine.Synthesis(audioQuery, speakerId);
         }
     }
 }
