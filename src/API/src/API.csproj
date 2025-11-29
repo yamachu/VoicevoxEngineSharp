@@ -13,6 +13,11 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\Core\src\Core.csproj" />
+    <ProjectReference Include="..\..\Core.Native\src\Core.Native.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="$(ProjectDir)\..\resources\**" Exclude="$(ProjectDir)\..\resources\.gitkeep" CopyToOutputDirectory="PreserveNewest" Visible="false" />
   </ItemGroup>
 
 </Project>

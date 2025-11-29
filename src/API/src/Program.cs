@@ -14,6 +14,7 @@ using NAudio.Wave;
 using VoicevoxEngineSharp.Core.Acoustic.Usecases;
 using VoicevoxEngineSharp.Core.Language.Providers;
 using VoicevoxEngineSharp.Core.Language.Usecases;
+using VoicevoxEngineSharp.Core.Native.Language.Providers;
 using VoicevoxEngineSharp.Core.Usecases;
 
 var parseResult = Parser.Default.ParseArguments<CommandLineOptions>(args);
@@ -60,7 +61,21 @@ if (parsedOptions.VoicevoxDir != null)
 }
 
 // FIXME
-builder.Services.AddSingleton<SynthesisEngine>(SynthesisEngineBuilder.Initialize(parsedOptions.VoicevoxDir ?? Directory.GetCurrentDirectory() + Path.DirectorySeparatorChar, parsedOptions.UseGpu));
+builder.Services.AddSingleton((_) =>
+{
+    var rootDirPath = parsedOptions.VoicevoxDir ?? Directory.GetCurrentDirectory() + Path.DirectorySeparatorChar;
+    var useGpu = parsedOptions.UseGpu;
+
+    if (!VoicevoxEngineSharp.Core.Native.Acoustic.Native.Core.Initialize(rootDirPath, useGpu))
+    {
+        throw new ArgumentException("Failed to initialize library, verify passed arguments");
+    }
+    return new SynthesisEngine(
+        VoicevoxEngineSharp.Core.Native.Acoustic.Native.Core.YukarinSForward,
+        VoicevoxEngineSharp.Core.Native.Acoustic.Native.Core.YukarinSaForward,
+        VoicevoxEngineSharp.Core.Native.Acoustic.Native.Core.DecodeForward
+    );
+});
 builder.Services.AddSingleton<Synthesis>();
 builder.Services.AddCors(options =>
 {
