@@ -18,9 +18,22 @@ namespace VoicevoxEngineSharp.Core.Usecases
             _synthesisEngine = synthesisEngine;
         }
 
+        public IEnumerable<AccentPhrase> ReplaceMoraData(IEnumerable<AccentPhrase> accentPhrases, int speakerId)
+        {
+            return _synthesisEngine.ReplaceMoraPitch(
+                _synthesisEngine.ReplacePhonemeLength(accentPhrases, speakerId),
+                speakerId
+            );
+        }
+
+        public IEnumerable<AccentPhrase> ReplaceMoraLength(IEnumerable<AccentPhrase> accentPhrases, int speakerId)
+        {
+            return _synthesisEngine.ReplacePhonemeLength(accentPhrases, speakerId);
+        }
+
         public IEnumerable<AccentPhrase> ReplaceMoraPitch(IEnumerable<AccentPhrase> accentPhrases, int speakerId)
         {
-            return _synthesisEngine.ReplaceMoraData(accentPhrases, speakerId);
+            return _synthesisEngine.ReplaceMoraPitch(accentPhrases, speakerId);
         }
 
         public IEnumerable<AccentPhrase> CreateAccentPhrases(string text, int speakerId)
@@ -63,7 +76,7 @@ namespace VoicevoxEngineSharp.Core.Usecases
                 });
             });
 
-            return ReplaceMoraPitch(accentPhrases, speakerId);
+            return ReplaceMoraData(accentPhrases, speakerId);
         }
 
         public IEnumerable<float> SynthesisWave(AudioQuery audioQuery, int speakerId)

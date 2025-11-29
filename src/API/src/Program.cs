@@ -116,6 +116,34 @@ app.MapPost("/mora_data", async (int speaker, Synthesis synthesisService, HttpCo
     }
 
     var request = await context.Request.ReadFromJsonAsync<IEnumerable<AccentPhrase>>();
+    var accentPhrases = synthesisService.ReplaceMoraData(request.Select(v => AccentPhrase.ToDomain(v)), speaker);
+
+    return accentPhrases.Select(v => AccentPhrase.FromDomain(v));
+});
+
+app.MapPost("/mora_length", async (int speaker, Synthesis synthesisService, HttpContext context) =>
+{
+    // This will be supported by default in .NET 6 https://github.com/dotnet/aspnetcore/pull/36118
+    if (!context.Request.HasJsonContentType())
+    {
+        throw new BadHttpRequestException("unsupporterd media type", StatusCodes.Status415UnsupportedMediaType);
+    }
+
+    var request = await context.Request.ReadFromJsonAsync<IEnumerable<AccentPhrase>>();
+    var accentPhrases = synthesisService.ReplaceMoraLength(request.Select(v => AccentPhrase.ToDomain(v)), speaker);
+
+    return accentPhrases.Select(v => AccentPhrase.FromDomain(v));
+});
+
+app.MapPost("/mora_pitch", async (int speaker, Synthesis synthesisService, HttpContext context) =>
+{
+    // This will be supported by default in .NET 6 https://github.com/dotnet/aspnetcore/pull/36118
+    if (!context.Request.HasJsonContentType())
+    {
+        throw new BadHttpRequestException("unsupporterd media type", StatusCodes.Status415UnsupportedMediaType);
+    }
+
+    var request = await context.Request.ReadFromJsonAsync<IEnumerable<AccentPhrase>>();
     var accentPhrases = synthesisService.ReplaceMoraPitch(request.Select(v => AccentPhrase.ToDomain(v)), speaker);
 
     return accentPhrases.Select(v => AccentPhrase.FromDomain(v));
