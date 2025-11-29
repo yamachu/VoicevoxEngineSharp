@@ -18,7 +18,13 @@ namespace VoicevoxEngineSharp.Core.Acoustic.Models
 
         public float PostPhonemeLength { get; init; }
 
-        public int OutputSamlingRate { get; init; }
+        // NOTE: 適用する
+        public float? PauseLength { get; init; }
+
+        // NOTE: 適用する
+        public float PauseLengthScale { get; init; }
+
+        public int OutputSamplingRate { get; init; }
 
         public bool OutputStereo { get; init; }
     }

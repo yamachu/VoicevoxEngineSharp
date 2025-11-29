@@ -25,7 +25,13 @@ internal record AudioQuery
     public float PostPhonemeLength { get; init; }
 
     [JsonPropertyName("outputSamplingRate")]
-    public int OutputSamlingRate { get; init; }
+    public int OutputSamplingRate { get; init; }
+
+    [JsonPropertyName("pauseLength")]
+    public float? PauseLength { get; init; } = null;
+
+    [JsonPropertyName("pauseLengthScale")]
+    public float PauseLengthScale { get; init; } = 1.0f;
 
     [JsonPropertyName("outputStereo")]
     public bool OutputStereo { get; init; }
