@@ -6,9 +6,11 @@ internal record Mora
     public string Text { get; init; }
 
 #nullable enable
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     [JsonPropertyName("consonant")]
     public string? Consonant { get; init; }
 
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     [JsonPropertyName("consonant_length")]
     public float? ConsonantLength { get; init; }
 
