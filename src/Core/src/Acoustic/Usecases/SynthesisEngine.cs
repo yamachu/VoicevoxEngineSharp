@@ -7,29 +7,13 @@ using VoicevoxEngineSharp.Core.Acoustic.Models;
 
 namespace VoicevoxEngineSharp.Core.Acoustic.Usecases
 {
-    public class SynthesisEngineBuilder
-    {
-        // root_dir_path requires trailing slash or back-slash
-        public static SynthesisEngine Initialize(string root_dir_path, bool use_gpu)
-        {
-            if (!Native.Core.Initialize(root_dir_path, use_gpu))
-            {
-                throw new ArgumentException("Failed to initialize library, verify passed arguments");
-            }
-            return new SynthesisEngine(
-                Native.Core.YukarinSForward,
-                Native.Core.YukarinSaForward,
-                Native.Core.DecodeForward
-            );
-        }
-    }
-
     public class SynthesisEngine
     {
         Func<int, long[], long[], float[]> YukarinSForward;
         Func<int, long[], long[], long[], long[], long[], long[], long[], float[]> YukarinSaForward;
         Func<int, int, float[], float[], long[], float[]> DecodeForward;
-        internal SynthesisEngine(
+
+        public SynthesisEngine(
             Func<int, long[], long[], float[]> yukarinSForwardImpl,
             Func<int, long[], long[], long[], long[], long[], long[], long[], float[]> yukarinSaForwardImpl,
             Func<int, int, float[], float[], long[], float[]> decodeForwardImpl
