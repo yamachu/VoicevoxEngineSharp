@@ -1,8 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using SharpOpenJTalk.Lang;
+using VoicevoxEngineSharp.Core.Language.Providers;
 
-namespace VoicevoxEngineSharp.Core.Language.Providers
+namespace VoicevoxEngineSharp.Core.Native.Language.Providers
 {
     public class FullContextProvider : IFullContextProvider
     {

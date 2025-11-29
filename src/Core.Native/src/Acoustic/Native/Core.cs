@@ -1,8 +1,9 @@
 ﻿using System.Runtime.InteropServices;
+using VoicevoxEngineSharp.Core.Acoustic.Native;
 
-namespace VoicevoxEngineSharp.Core.Acoustic.Native
+namespace VoicevoxEngineSharp.Core.Native.Acoustic.Native
 {
-    internal class Core : IAcousticDNNLibrary
+    public class Core : IAcousticDNNLibrary
     {
         public static bool Initialize(string root_dir_path, bool use_gpu)
             => CoreUnmanaged.initialize(root_dir_path, use_gpu);

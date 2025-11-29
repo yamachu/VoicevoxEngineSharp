@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Runtime.InteropServices;
 
-namespace VoicevoxEngineSharp.Core.Acoustic.Native
+namespace VoicevoxEngineSharp.Core.Native.Acoustic.Native
 {
     internal class CoreUnmanaged
     {

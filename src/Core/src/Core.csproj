@@ -8,11 +8,6 @@
 
   <ItemGroup>
     <PackageReference Include="NumSharp" Version="0.30.0" />
-    <PackageReference Include="SharpOpenJTalk.Lang" Version="1.2.0" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Include="$(ProjectDir)\..\resources\**" Exclude="$(ProjectDir)\..\resources\.gitkeep" CopyToOutputDirectory="PreserveNewest" Visible="false" />
   </ItemGroup>
 
 </Project>
