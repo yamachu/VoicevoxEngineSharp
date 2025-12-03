@@ -111,6 +111,16 @@ function App() {
 
   return (
     <>
+      <h1>VoicevoxEngineSharpのWebAssembly版のサンプルプロジェクト</h1>
+      <p>
+        音声モデルには、https://github.com/Hiroshiba/vv_core_inference
+        で提供されているものを利用しています
+      </p>
+      <p>
+        辞書は open_jtalk_dic_utf_8-1.11 (
+        https://sourceforge.net/projects/open-jtalk/ ) を使用しています
+      </p>
+
       <button
         disabled={engine !== undefined}
         onClick={async () => {
