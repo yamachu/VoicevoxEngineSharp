@@ -19,10 +19,10 @@ const sessions = {
 
 const modelPaths = {
   /* eslint-disable @typescript-eslint/no-unused-vars */
-  yukarinS: (_speakerId: number) => `/models/duration.onnx`,
-  yukarinSa: (_speakerId: number) => `/models/intonation.onnx`,
-  spectrogram: (_speakerId: number) => `/models/spectrogram.onnx`,
-  vocoder: (_speakerId: number) => `/models/vocoder.onnx`,
+  yukarinS: (_speakerId: number) => `./models/duration.onnx`,
+  yukarinSa: (_speakerId: number) => `./models/intonation.onnx`,
+  spectrogram: (_speakerId: number) => `./models/spectrogram.onnx`,
+  vocoder: (_speakerId: number) => `./models/vocoder.onnx`,
   /* eslint-enable @typescript-eslint/no-unused-vars */
 };
 
