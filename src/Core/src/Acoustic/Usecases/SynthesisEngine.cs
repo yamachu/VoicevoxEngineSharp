@@ -219,16 +219,35 @@ namespace VoicevoxEngineSharp.Core.Acoustic.Usecases
             var vowelIndexes = np.array(vowelIndexesData);
 
             // forward decode
-            var phonemeBinNum = np.round_(np.array(phonemeLength) * np.array(new[] { rate })).astype(NPTypeCode.Int32);
+            var phonemeBinNum = np.round_(ndPhonemeLength * rate).astype(NPTypeCode.Int32);
 
             //var phoneme = np.repeat(np.array(phonemeListS), phonemeBinNum);
             var phoneme = np.array(phonemeBinNum.ToArray<int>().SelectMany((v, i) => np.repeat(phonemeListS.ElementAt(i), v).ToArray<long>()));
 
-            var tmp = (vowelIndexes[":-1"] + 1).ToArray<int>();
+            var splitIndices = (vowelIndexes[":-1"] + 1).ToArray<int>();
+            var starts = new[] { 0 }.Concat(splitIndices).ToArray();
+            var ends = splitIndices.Concat(new[] { (int)phonemeBinNum.size }).ToArray();
 
-            //var repeatedF0 = np.repeat(f0, np.array(tmp.Zip(tmp.Skip(1), (p, n) => $"{p}:{n}").Select(v => phonemeBinNum[v].sum()).ToArray()));
-            var repeatedF0 = np.array(tmp.Zip(tmp.Skip(1), (p, n) => $"{p}:{n}").Select(v => phonemeBinNum[v].sum().astype(NPTypeCode.Int64)).ToArray()
-                .SelectMany((v, i) => np.repeat(f0[i], (int)v.GetInt64()).ToArray<float>()));
+            var repeatedF0List = new List<float>();
+            var phonemeBinNumArray = phonemeBinNum.ToArray<int>();
+            var f0Array = f0.ToArray<float>();
+
+            for (int i = 0; i < starts.Length; i++)
+            {
+                var start = starts[i];
+                var end = ends[i];
+                long count = 0;
+                for (int j = start; j < end; j++)
+                {
+                    count += phonemeBinNumArray[j];
+                }
+
+                if (i < f0Array.Length)
+                {
+                    repeatedF0List.AddRange(Enumerable.Repeat(f0Array[i], (int)count));
+                }
+            }
+            var repeatedF0 = np.array(repeatedF0List.ToArray());
 
             var arr = np.zeros(new Shape(new int[] { phoneme.size, OjtPhoneme.numPhoneme }), typeof(float));
             foreach (var (outer, inner) in phoneme.ToArray<long>().Select((inner, outer) => (outer, inner)))
