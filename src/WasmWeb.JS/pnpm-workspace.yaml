@@ -1,0 +1,7 @@
+packages:
+  - core
+  - inference
+  - web-sample
+
+onlyBuiltDependencies:
+  - protobufjs

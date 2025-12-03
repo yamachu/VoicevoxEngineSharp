@@ -1,0 +1,9 @@
+{
+  "name": "voicevoxenginesharp-wasm-web",
+  "private": true,
+  "devDependencies": {
+    "@types/node": "24.10.1",
+    "typescript": "5.9.3",
+    "vite": "7.2.6"
+  }
+}

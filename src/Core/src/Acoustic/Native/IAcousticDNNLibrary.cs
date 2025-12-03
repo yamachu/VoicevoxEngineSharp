@@ -4,10 +4,6 @@ namespace VoicevoxEngineSharp.Core.Acoustic.Native
 {
     public interface IAcousticDNNLibrary
     {
-        static bool Initialize(string root_dir_path, bool use_gpu)
-            => throw new NotImplementedException();
-
-
         static float[] YukarinSForward(int length, long[] phoneme_list, long[] speaker_id)
             => throw new NotImplementedException();
 

@@ -1,0 +1,26 @@
+<Project Sdk="Microsoft.NET.Sdk.WebAssembly">
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <!-- NOTE: https://github.com/dotnet/runtime/pull/120097 の反映が来たら使える -->
+    <!-- それまでは、dotnet new wasmconsole とかで作成したプロジェクトでしかdotnet.d.tsは取得できない -->
+    <WasmEmitTypeScriptDefinitions>true</WasmEmitTypeScriptDefinitions>
+    <WasmEnableHotReload>false</WasmEnableHotReload>
+
+    <JSPortOverrideTypeDefinitionOutputDir>$(MSBuildProjectDirectory)/types</JSPortOverrideTypeDefinitionOutputDir>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <CompilerVisibleProperty Include="JSPortOverrideTypeDefinitionOutputDir" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\Core\src\Core.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="SharpOpenJTalk.Lang" Version="2.0.3" />
+    <PackageReference Include="NetWebAssemblyTSTypeGenerator" Version="*" OutputItemType="Analyzer" />
+    <PackageReference Include="SharpZipLib" Version="1.4.2" />
+  </ItemGroup>
+</Project>
