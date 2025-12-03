@@ -72,6 +72,7 @@ export default defineConfig({
     },
   },
   build: {
+    assetsDir: "",
     rollupOptions: {
       // DO NOT bundle dotnet runtime files
       external: [/^\.\/_framework\//],

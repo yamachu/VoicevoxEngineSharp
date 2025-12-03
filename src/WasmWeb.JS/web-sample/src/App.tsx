@@ -19,10 +19,10 @@ const sessions = {
 
 const modelPaths = {
   /* eslint-disable @typescript-eslint/no-unused-vars */
-  yukarinS: (_speakerId: number) => `/models/duration.onnx`,
-  yukarinSa: (_speakerId: number) => `/models/intonation.onnx`,
-  spectrogram: (_speakerId: number) => `/models/spectrogram.onnx`,
-  vocoder: (_speakerId: number) => `/models/vocoder.onnx`,
+  yukarinS: (_speakerId: number) => `./models/duration.onnx`,
+  yukarinSa: (_speakerId: number) => `./models/intonation.onnx`,
+  spectrogram: (_speakerId: number) => `./models/spectrogram.onnx`,
+  vocoder: (_speakerId: number) => `./models/vocoder.onnx`,
   /* eslint-enable @typescript-eslint/no-unused-vars */
 };
 
@@ -111,6 +111,16 @@ function App() {
 
   return (
     <>
+      <h1>VoicevoxEngineSharpのWebAssembly版のサンプルプロジェクト</h1>
+      <p>
+        音声モデルには、https://github.com/Hiroshiba/vv_core_inference
+        で提供されているものを利用しています
+      </p>
+      <p>
+        辞書は open_jtalk_dic_utf_8-1.11 (
+        https://sourceforge.net/projects/open-jtalk/ ) を使用しています
+      </p>
+
       <button
         disabled={engine !== undefined}
         onClick={async () => {
@@ -128,7 +138,7 @@ function App() {
         disabled={engine === undefined || dictionaryMounted}
         onClick={async () => {
           if (!engine) return;
-          const response = await fetch("/open_jtalk_dic_utf_8-1.11.tgz");
+          const response = await fetch("./open_jtalk_dic_utf_8-1.11.tgz");
           const arrayBuffer = await response.arrayBuffer();
           const uint8Array = new Uint8Array(arrayBuffer);
 
