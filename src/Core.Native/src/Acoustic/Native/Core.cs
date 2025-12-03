@@ -5,8 +5,8 @@ namespace VoicevoxEngineSharp.Core.Native.Acoustic.Native
 {
     public class Core : IAcousticDNNLibrary
     {
-        public static bool Initialize(string root_dir_path, bool use_gpu)
-            => CoreUnmanaged.initialize(root_dir_path, use_gpu);
+        public static bool Initialize(bool use_gpu, int cpu_num_threads, bool load_all_models)
+            => CoreUnmanaged.initialize(use_gpu, cpu_num_threads, load_all_models);
 
         public static string Metas()
         {

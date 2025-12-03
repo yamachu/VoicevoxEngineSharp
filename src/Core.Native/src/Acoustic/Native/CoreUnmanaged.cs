@@ -5,10 +5,10 @@ namespace VoicevoxEngineSharp.Core.Native.Acoustic.Native
 {
     internal class CoreUnmanaged
     {
-        private const string DllName = "core";
+        private const string DllName = "voicevox_core";
 
         [DllImport(DllName, CallingConvention = CallingConvention.Cdecl)]
-        public static extern bool initialize(string root_dir_path, bool use_gpu);
+        public static extern bool initialize(bool use_gpu, int cpu_num_threads, bool load_all_models);
 
         [DllImport(DllName, CallingConvention = CallingConvention.Cdecl)]
         public static extern IntPtr metas();
