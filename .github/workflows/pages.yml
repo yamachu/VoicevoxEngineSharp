@@ -33,7 +33,7 @@ jobs:
       - uses: actions/setup-dotnet@v5
       - run: dotnet workload install wasm-tools
 
-      - run: git clone --branch pkg-update https://github.com/yamachu/vv_core_inference.git
+      - run: git clone https://github.com/Hiroshiba/vv_core_inference.git
 
       # setup python
       - uses: astral-sh/setup-uv@v7
