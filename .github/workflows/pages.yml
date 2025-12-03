@@ -3,7 +3,7 @@ name: Deploy Web Sample to GitHub Pages
 on:
   push:
     branches:
-      - deploy-web
+      - master
 
 permissions:
   pages: write
