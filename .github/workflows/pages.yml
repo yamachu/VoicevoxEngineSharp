@@ -68,8 +68,11 @@ jobs:
       # build js
       - run: pnpm install
         working-directory: src/WasmWeb.JS
-      - run: pnpm build -- --base=${{ env.PAGES_BASE_URL }}
-        working-directory: src/WasmWeb.JS/web-sample
+      - run: |
+          cd core && pnpm build && cd -
+          cd inference && pnpm build && cd -
+          cd web-sample && pnpm build -- --base=${{ env.PAGES_BASE_URL }}
+        working-directory: src/WasmWeb.JS
 
       # publish
       - uses: actions/upload-pages-artifact@v4
