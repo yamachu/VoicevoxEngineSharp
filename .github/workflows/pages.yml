@@ -22,6 +22,7 @@ jobs:
         with:
           run_install: false
           package_json_file: src/WasmWeb.JS/web-sample/package.json
+          version: 10
       - uses: actions/setup-node@v6
         with:
           node-version: 24
