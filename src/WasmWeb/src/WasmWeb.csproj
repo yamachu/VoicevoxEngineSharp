@@ -5,6 +5,7 @@
     <!-- NOTE: https://github.com/dotnet/runtime/pull/120097 の反映が来たら使える -->
     <!-- それまでは、dotnet new wasmconsole とかで作成したプロジェクトでしかdotnet.d.tsは取得できない -->
     <WasmEmitTypeScriptDefinitions>true</WasmEmitTypeScriptDefinitions>
+    <WasmEnableHotReload>false</WasmEnableHotReload>
 
     <JSPortOverrideTypeDefinitionOutputDir>$(MSBuildProjectDirectory)/types</JSPortOverrideTypeDefinitionOutputDir>
   </PropertyGroup>
