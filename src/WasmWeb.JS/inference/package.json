@@ -1,0 +1,18 @@
+{
+  "name": "@voicevoxenginesharp-wasm-web/inference",
+  "version": "0.0.0",
+  "type": "module",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    }
+  },
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build"
+  },
+  "devDependencies": {
+    "onnxruntime-common": "1.23.2"
+  }
+}

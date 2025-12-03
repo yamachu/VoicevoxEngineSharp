@@ -1,2 +1,6 @@
 packages:
   - core
+  - inference
+
+onlyBuiltDependencies:
+  - protobufjs
