@@ -64,10 +64,10 @@ if (parsedOptions.VoicevoxDir != null)
 // FIXME
 builder.Services.AddSingleton((_) =>
 {
-    var rootDirPath = parsedOptions.VoicevoxDir ?? Directory.GetCurrentDirectory() + Path.DirectorySeparatorChar;
     var useGpu = parsedOptions.UseGpu;
+    var loadAllModels = parsedOptions.LoadAllModels;
 
-    if (!VoicevoxEngineSharp.Core.Native.Acoustic.Native.Core.Initialize(rootDirPath, useGpu))
+    if (!VoicevoxEngineSharp.Core.Native.Acoustic.Native.Core.Initialize(useGpu, 1 /* TODO: Determine CPU-Core based */, loadAllModels))
     {
         throw new ArgumentException("Failed to initialize library, verify passed arguments");
     }
@@ -254,4 +254,7 @@ internal class CommandLineOptions
     // 今後作りを変える
     [Option(longName: "voiceliv_dir", Required = false, Default = null)]
     public string? VoicelibDir { get; set; }
+
+    [Option(longName: "load_all_models", Required = false, Default = false)]
+    public bool LoadAllModels { get; set; }
 }
