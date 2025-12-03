@@ -51,10 +51,10 @@ jobs:
           uv run convert.py --yukarin_s_model_dir "model/yukarin_s" --yukarin_sa_model_dir "model/yukarin_sa" --yukarin_sosoa_model_dir "model/yukarin_sosoa" --hifigan_model_dir "model/hifigan"
       - run: |
           mkdir -p src/WasmWeb.JS/web-sample/public/models
-          cp -v vv_core_inference/model/yukarin_s/duration.onnx src/WasmWeb.JS/web-sample/public/models/duration.onnx
-          cp -v vv_core_inference/model/yukarin_sa/intonation.onnx src/WasmWeb.JS/web-sample/public/models/intonation.onnx
-          cp -v vv_core_inference/model/yukarin_sosoa/spectrogram.onnx src/WasmWeb.JS/web-sample/public/models/spectrogram.onnx
-          cp -v vv_core_inference/model/hifigan/vocoder.onnx src/WasmWeb.JS/web-sample/public/models/vocoder.onnx
+          cp -v vv_core_inference/model/duration.onnx src/WasmWeb.JS/web-sample/public/models/duration.onnx
+          cp -v vv_core_inference/model/intonation.onnx src/WasmWeb.JS/web-sample/public/models/intonation.onnx
+          cp -v vv_core_inference/model/spectrogram.onnx src/WasmWeb.JS/web-sample/public/models/spectrogram.onnx
+          cp -v vv_core_inference/model/vocoder.onnx src/WasmWeb.JS/web-sample/public/models/vocoder.onnx
 
       # setup dictionary
       - run: |
