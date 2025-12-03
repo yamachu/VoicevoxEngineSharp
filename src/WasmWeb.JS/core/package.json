@@ -1,0 +1,18 @@
+{
+  "name": "@voicevoxenginesharp-wasm-web/core",
+  "version": "0.0.0",
+  "type": "module",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    }
+  },
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build"
+  },
+  "dependencies": {
+    "dotnet-webassembly-type-helper": "link:../../WasmWeb/src/types"
+  }
+}
