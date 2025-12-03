@@ -128,7 +128,7 @@ function App() {
         disabled={engine === undefined || dictionaryMounted}
         onClick={async () => {
           if (!engine) return;
-          const response = await fetch("/open_jtalk_dic_utf_8-1.11.tgz");
+          const response = await fetch("./open_jtalk_dic_utf_8-1.11.tgz");
           const arrayBuffer = await response.arrayBuffer();
           const uint8Array = new Uint8Array(arrayBuffer);
 
