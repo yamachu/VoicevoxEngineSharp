@@ -71,7 +71,7 @@ jobs:
       - run: |
           cd core && pnpm build && cd -
           cd inference && pnpm build && cd -
-          cd web-sample && pnpm build -- --base=${{ env.PAGES_BASE_URL }}
+          cd web-sample && pnpm build --base=${{ env.PAGES_BASE_URL }}
         working-directory: src/WasmWeb.JS
 
       # publish
