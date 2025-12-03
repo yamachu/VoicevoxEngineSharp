@@ -1,0 +1,76 @@
+name: Deploy Web Sample to GitHub Pages
+
+on:
+  push:
+    branches:
+      - deploy-web
+
+permissions:
+  pages: write
+  id-token: write
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    env:
+      PAGES_BASE_URL: https://yamachu.github.io/VoicevoxEngineSharp
+    steps:
+      - uses: actions/checkout@v6
+
+      # setup node
+      - uses: pnpm/action-setup@v4
+        with:
+          run_install: false
+          package_json_file: src/WasmWeb.JS/web-sample
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 24
+          cache: 'pnpm'
+
+      # setup dotnet
+      - uses: actions/setup-dotnet@v5
+      - run: dotnet workload install wasm-tools
+
+      - run: git clone https://github.com/Hiroshiba/vv_core_inference.git
+
+      # setup python
+      - uses: astral-sh/setup-uv@v7
+        with:
+          python-version: '3.11'
+          working-directory: vv_core_inference
+
+      # setup onnx model
+      - run: |
+          wget -O model.zip https://github.com/Hiroshiba/vv_core_inference/releases/download/0.0.3/model.zip
+          unzip -q model.zip -d vv_core_inference/
+          rm model.zip
+      - run: |
+          cd vv_core_inference
+          uv run convert.py --yukarin_s_model_dir "model/yukarin_s" --yukarin_sa_model_dir "model/yukarin_sa" --yukarin_sosoa_model_dir "model/yukarin_sosoa" --hifigan_model_dir "model/hifigan"
+      - run: |
+          mkdir -p src/WasmWeb.JS/web-sample/public/models
+          cp -v vv_core_inference/model/yukarin_s/duration.onnx src/WasmWeb.JS/web-sample/public/models/duration.onnx
+          cp -v vv_core_inference/model/yukarin_sa/intonation.onnx src/WasmWeb.JS/web-sample/public/models/intonation.onnx
+          cp -v vv_core_inference/model/yukarin_sosoa/spectrogram.onnx src/WasmWeb.JS/web-sample/public/models/spectrogram.onnx
+          cp -v vv_core_inference/model/hifigan/vocoder.onnx src/WasmWeb.JS/web-sample/public/models/vocoder.onnx
+
+      # setup dictionary
+      - run: |
+          mkdir -p src/WasmWeb.JS/web-sample/public
+          wget -O src/WasmWeb.JS/web-sample/public/open_jtalk_dic_utf_8-1.11.tgz http://downloads.sourceforge.net/open-jtalk/open_jtalk_dic_utf_8-1.11.tar.gz
+
+      # build dotnet
+      - run: dotnet build
+        working-directory: src/WasmWeb/src
+
+      # build js
+      - run: pnpm install
+        working-directory: src/WasmWeb.JS
+      - run: pnpm build -- --base=${{ env.PAGES_BASE_URL }}
+        working-directory: src/WasmWeb.JS/web-sample
+
+      # publish
+      - uses: actions/upload-pages-artifact@v4
+        with:
+          path: src/WasmWeb.JS/web-sample/dist
+      - uses: actions/deploy-pages@v4
