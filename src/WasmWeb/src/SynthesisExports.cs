@@ -7,11 +7,11 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 using SharpOpenJTalk.Lang;
-using VoicevoxEngineSharp.Core.Acoustic.Models;
 using VoicevoxEngineSharp.Core.Acoustic.Usecases;
 using VoicevoxEngineSharp.Core.Language.Providers;
 using VoicevoxEngineSharp.Core.Language.Usecases;
 using VoicevoxEngineSharp.Core.Usecases;
+using VoicevoxEngineSharp.WasmWeb.Models;
 
 namespace VoicevoxEngineSharp.WasmWeb
 {
@@ -77,7 +77,8 @@ namespace VoicevoxEngineSharp.WasmWeb
         {
             EnsureInitialized();
             var accentPhrases = await _synthesis!.CreateAccentPhrases(text, speakerId);
-            return JsonSerializer.Serialize(accentPhrases.ToArray(), SynthesisJsonContext.Default.AccentPhraseArray);
+            var result = accentPhrases.Select(ap => AccentPhrase.FromDomain(ap)).ToArray();
+            return JsonSerializer.Serialize(result, SynthesisJsonContext.Default.AccentPhraseArray);
         }
 
         [JSExport]
@@ -86,7 +87,7 @@ namespace VoicevoxEngineSharp.WasmWeb
             EnsureInitialized();
             var accentPhrases = await _synthesis!.CreateAccentPhrases(text, speakerId);
 
-            var audioQuery = new Core.Acoustic.Models.AudioQuery
+            var domainAudioQuery = new Core.Acoustic.Models.AudioQuery
             {
                 AccentPhrases = accentPhrases,
                 SpeedScale = 1,
@@ -101,6 +102,7 @@ namespace VoicevoxEngineSharp.WasmWeb
                 OutputStereo = false,
             };
 
+            var audioQuery = Models.AudioQuery.FromDomain(domainAudioQuery);
             return JsonSerializer.Serialize(audioQuery, SynthesisJsonContext.Default.AudioQuery);
         }
 
@@ -109,8 +111,9 @@ namespace VoicevoxEngineSharp.WasmWeb
         {
             EnsureInitialized();
             var accentPhrases = JsonSerializer.Deserialize(accentPhrasesJson, SynthesisJsonContext.Default.AccentPhraseArray)!;
-            var result = await _synthesis!.ReplaceMoraData(accentPhrases, speakerId);
-            return JsonSerializer.Serialize(result.ToArray(), SynthesisJsonContext.Default.AccentPhraseArray);
+            var domainAccentPhrases = accentPhrases.Select(ap => AccentPhrase.ToDomain(ap));
+            var result = await _synthesis!.ReplaceMoraData(domainAccentPhrases, speakerId);
+            return JsonSerializer.Serialize(result.Select(ap => AccentPhrase.FromDomain(ap)).ToArray(), SynthesisJsonContext.Default.AccentPhraseArray);
         }
 
         [JSExport]
@@ -118,8 +121,9 @@ namespace VoicevoxEngineSharp.WasmWeb
         {
             EnsureInitialized();
             var accentPhrases = JsonSerializer.Deserialize(accentPhrasesJson, SynthesisJsonContext.Default.AccentPhraseArray)!;
-            var result = await _synthesis!.ReplaceMoraLength(accentPhrases, speakerId);
-            return JsonSerializer.Serialize(result.ToArray(), SynthesisJsonContext.Default.AccentPhraseArray);
+            var domainAccentPhrases = accentPhrases.Select(ap => AccentPhrase.ToDomain(ap));
+            var result = await _synthesis!.ReplaceMoraLength(domainAccentPhrases, speakerId);
+            return JsonSerializer.Serialize(result.Select(ap => AccentPhrase.FromDomain(ap)).ToArray(), SynthesisJsonContext.Default.AccentPhraseArray);
         }
 
         [JSExport]
@@ -127,8 +131,9 @@ namespace VoicevoxEngineSharp.WasmWeb
         {
             EnsureInitialized();
             var accentPhrases = JsonSerializer.Deserialize(accentPhrasesJson, SynthesisJsonContext.Default.AccentPhraseArray)!;
-            var result = await _synthesis!.ReplaceMoraPitch(accentPhrases, speakerId);
-            return JsonSerializer.Serialize(result.ToArray(), SynthesisJsonContext.Default.AccentPhraseArray);
+            var domainAccentPhrases = accentPhrases.Select(ap => AccentPhrase.ToDomain(ap));
+            var result = await _synthesis!.ReplaceMoraPitch(domainAccentPhrases, speakerId);
+            return JsonSerializer.Serialize(result.Select(ap => AccentPhrase.FromDomain(ap)).ToArray(), SynthesisJsonContext.Default.AccentPhraseArray);
         }
 
         [JSExport]
@@ -137,7 +142,8 @@ namespace VoicevoxEngineSharp.WasmWeb
         {
             EnsureInitialized();
             var audioQuery = JsonSerializer.Deserialize(audioQueryJson, SynthesisJsonContext.Default.AudioQuery)!;
-            var wave = await _synthesis!.SynthesisWave(audioQuery, speakerId);
+            var domainAudioQuery = Models.AudioQuery.ToDomain(audioQuery);
+            var wave = await _synthesis!.SynthesisWave(domainAudioQuery, speakerId);
             // Convert to double[] and wrap in JSObject
             var waveDouble = wave.Select(v => (double)v).ToArray();
             return PromiseArrayHelper.WrapFloatArray(waveDouble);
