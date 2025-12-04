@@ -67,14 +67,30 @@ type Imports = {
 
 let dotnetExports: Exported | undefined = undefined;
 
-export const initialize = async (imports: Imports): Promise<Exported> => {
+export const initialize = async (
+  imports: Imports,
+  options?: { diagnosticTracing?: boolean },
+): Promise<Exported> => {
   if (dotnetExports) {
     return dotnetExports;
   }
 
-  const { setModuleImports, getAssemblyExports, getConfig } = await dotnet
-    .withDiagnosticTracing(true)
-    .create();
+  const dotnetBuilder = options
+    ? Object.entries(options).reduce((acc, curr) => {
+        const [key, value] = curr;
+        switch (key) {
+          case "diagnosticTracing": {
+            return value === undefined ? acc : acc.withDiagnosticTracing(value);
+          }
+          default: {
+            return acc;
+          }
+        }
+      }, dotnet)
+    : dotnet;
+
+  const { setModuleImports, getAssemblyExports, getConfig } =
+    await dotnetBuilder.create();
 
   setTypedModuleImports(setModuleImports, "synthesis.js", {
     inference: {
