@@ -26,6 +26,7 @@
     "eslint-plugin-react-refresh": "0.4.24",
     "globals": "16.5.0",
     "typescript-eslint": "8.48.0",
+    "@yamachu/vite-plugin-dotnet-wasm": "0.1.0",
     "vite-plugin-static-copy": "3.1.4",
     "vite-plugin-wasm": "3.5.0"
   }
