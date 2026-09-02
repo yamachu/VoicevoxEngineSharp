@@ -1,2 +1,5 @@
 /types/*
 !/types/.gitkeep
+
+# .NET 11 Emit typescript declaration file
+wwwroot/dotnet.d.ts

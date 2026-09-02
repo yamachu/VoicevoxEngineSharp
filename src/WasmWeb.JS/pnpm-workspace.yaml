@@ -3,5 +3,9 @@ packages:
   - inference
   - web-sample
 
+allowBuilds:
+  esbuild: false
+  protobufjs: false
+
 onlyBuiltDependencies:
   - protobufjs
